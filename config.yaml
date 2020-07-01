@@ -1,0 +1,3 @@
+FASTQDIR: "/data/tests/SRA_n3"
+SEARCHDB: "/scratch/ws/lauber-001/db/RefSeq/viral_protein_RNAviruses"
+THREADS:  6

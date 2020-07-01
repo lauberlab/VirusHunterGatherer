@@ -1,0 +1,6 @@
+INFILE: "contigs.fasta"
+THREADS: 6
+MINSIZE: 150
+CLUSTE: 0.00001
+SEARCHE: 0.0000000001
+SEARCHDB: "/scratch/ws/lauber-001/db/RefSeq/viral_protein_RNAviruses"

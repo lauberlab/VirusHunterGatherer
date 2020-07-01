@@ -1,0 +1,65 @@
+# run on login node
+#snakemake --cores 6 -p -j
+
+# run on compute node
+#snakemake -p --cluster-sync "srun --cpus-per-task=6 --mem-per-cpu=1875 --time=7:59:00" --jobs 100
+
+# start snakemaking
+
+# get parameters via config file
+configfile: "config.yaml"
+
+# process input
+FILES   = [ os.path.basename(x) for x in glob.glob( config["INDIR"].join("/*") ) ]
+SAMPLES = [ os.path.splitext(x) for x in FILES ]
+
+# start calculating
+rule all:
+ message:
+  "Running everything"
+ input:
+  expand('Trimming/{sample}_R1.trim.fastq', sample=SAMPLES)  
+
+rule GetORFs:
+ message:
+  "Extracting putative peptide sequences"
+ input:
+  config["INFILE"]
+ output:
+  "getorf.fasta"
+ params:
+  minsize=config["MINSIZE"]
+ shell:
+  "getorf -sequence {input} -outseq {output} -minsize {params.minsize}"
+
+rule ClusterORFs:
+ message:
+  "Clustering the peptide sequences"
+ input:
+  "getorf.fasta"
+ output:
+  tdir=directory( "easycluster" ),
+  clst="clustering_cluster.tsv",
+  reps="clustering_rep_seq.fasta"
+ params:
+  prfx="clustering",
+  cpus=config["THREADS"],
+  evalue=config["CLUSTE"]
+ shell:
+  "mmseqs easy-cluster {input} {params.prfx} {output.tdir} -e {params.evalue} --threads {params.cpus} -s 7.5 -c 0.7 --cov-mode 0 --cluster-mode 1 --min-seq-id 0.3 --alignment-mode 3"
+
+rule SearchRefDB:
+ message:
+  "Comparing cluster representatives against reference DB"
+ input:
+  "clustering_rep_seq.fasta"
+ output:
+  al="clustering_rep_seq_vs_refDB.txt",
+  tdir=directory( "easysearch" )
+ params:
+  cpus=config["THREADS"],
+  db=config["SEARCHDB"],
+  evalue=config["SEARCHE"]
+ shell:
+  "mmseqs easy-search {input} {params.db} {output.al} {output.tdir} --threads {params.cpus} --max-seqs 10 -e {params.evalue} --format-output query,qlen,evalue,pident,alnlen,theader"
+
