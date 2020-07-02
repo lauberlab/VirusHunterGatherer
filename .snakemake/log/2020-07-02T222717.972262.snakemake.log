@@ -1,0 +1,32 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 3
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	3	hunter
+	4
+
+[Thu Jul  2 22:27:18 2020]
+Job 2: Executing virushunter search
+
+/home/lauber/workflows/01_virushunter/1_scripts/virushunterTWC.pl RNAviruses /data/tests/SRA_n3/DRR067307.fastq.gz test_SRA_n3 DRR067307 /data/virushunter 6 /data/db/RefSeq/filter/filter /data/db/RefSeq/refseq_protein/refseq_protein /data/db/RefSeq/viral_genomic/viral_genomic /data/db/RefSeq/viral_protein/viral_protein.acc_list /home/lauber/workflows/01_virushunter 0 0
+
+[Thu Jul  2 22:27:18 2020]
+Job 1: Executing virushunter search
+
+/home/lauber/workflows/01_virushunter/1_scripts/virushunterTWC.pl RNAviruses /data/tests/SRA_n3/ERR489193.fastq.gz test_SRA_n3 ERR489193 /data/virushunter 6 /data/db/RefSeq/filter/filter /data/db/RefSeq/refseq_protein/refseq_protein /data/db/RefSeq/viral_genomic/viral_genomic /data/db/RefSeq/viral_protein/viral_protein.acc_list /home/lauber/workflows/01_virushunter 0 0
+
+[Thu Jul  2 22:27:18 2020]
+Job 3: Executing virushunter search
+
+/home/lauber/workflows/01_virushunter/1_scripts/virushunterTWC.pl RNAviruses /data/tests/SRA_n3/ERR1630605.fastq.gz test_SRA_n3 ERR1630605 /data/virushunter 6 /data/db/RefSeq/filter/filter /data/db/RefSeq/refseq_protein/refseq_protein /data/db/RefSeq/viral_genomic/viral_genomic /data/db/RefSeq/viral_protein/viral_protein.acc_list /home/lauber/workflows/01_virushunter 0 0
+[Thu Jul  2 22:39:37 2020]
+Error in rule hunter:
+    jobid: 3
+    output: /data/virushunter/RNAviruses/test_SRA_n3/results/ERR1630605/final.hits.tsv
+    shell:
+        /home/lauber/workflows/01_virushunter/1_scripts/virushunterTWC.pl RNAviruses /data/tests/SRA_n3/ERR1630605.fastq.gz test_SRA_n3 ERR1630605 /data/virushunter 6 /data/db/RefSeq/filter/filter /data/db/RefSeq/refseq_protein/refseq_protein /data/db/RefSeq/viral_genomic/viral_genomic /data/db/RefSeq/viral_protein/viral_protein.acc_list /home/lauber/workflows/01_virushunter 0 0
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+

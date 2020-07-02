@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 28 of /home/lauber/workflows/01_virushunter/Snakefile:
+Missing input files for rule hunter:
+ERR489193

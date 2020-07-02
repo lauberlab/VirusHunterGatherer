@@ -1,0 +1,16 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 3
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1
+
+[Thu Jul  2 16:26:15 2020]
+Job 0: Running everything
+
+[Thu Jul  2 16:26:15 2020]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: /home/lauber/workflows/01_virushunter/.snakemake/log/2020-07-02T162615.899185.snakemake.log

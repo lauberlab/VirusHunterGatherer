@@ -619,7 +619,7 @@ sub filter2{
 	my $idsin  = shift;
 	my $idsout = shift;
 	my $fasout = shift;
-	my $cntgs  = shift;16543.hunter_test
+	my $cntgs  = shift;
 	printf "[virushunter] \t$sraid: filtering - tblastx against viral_genomic\n";
 	# read query sequence IDs from file
 	open( IDSIN, "<$idsin" ) or die ( "Can't open file '$idsin': $!\n" );

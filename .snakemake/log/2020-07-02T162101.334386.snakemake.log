@@ -1,0 +1,5 @@
+Building DAG of jobs...
+MissingInputException in line 30 of /home/lauber/workflows/01_virushunter/Snakefile:
+Missing input files for rule hunter:
+/data/tests/SRA_n3/ERR489193.fastq.fastq
+ERR489193.fastq
