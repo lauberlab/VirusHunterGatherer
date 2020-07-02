@@ -1,3 +1,33 @@
-FASTQDIR: "/data/tests/SRA_n3"
-SEARCHDB: "/scratch/ws/lauber-001/db/RefSeq/viral_protein_RNAviruses"
-THREADS:  6
+###########################################
+#                                         #
+# parameters usually adjusted by the user #
+#                                         #
+###########################################
+# directory with fastq files
+FASTQDIR:  "/data/tests/SRA_n3"
+# group of viruses to search for (RNAviruses, smallDNAviruses, largeDNAviruses)
+VIRFAM:    "RNAviruses"
+# name of project folder
+PROJECTID: "test_SRA_n3"
+# number of threads to use for analysis of individual datasets
+THREADS:   6
+# flag to enbable mapping against human genome; only recommended when analysing human samples
+MAPHG38:   0
+###############################################
+#                                             #
+# parameters usually not adjusted by the user #
+#                                             #
+###############################################
+# base directoy where results are saved
+BASEDIR:   "/data/virushunter"
+# blast database used for 1st filtering step against contaminant sequences
+DBFILTER:  "/data/db/RefSeq/filter/filter"
+# blast database used for 2nd filtering step against non-viral RefSeq
+DBREFSEQ:  "/data/db/RefSeq/refseq_protein/refseq_protein"
+# blast database used for 3rd filtering step against viral RefSeq
+DBVIRAL:   "/data/db/RefSeq/viral_genomic/viral_genomic"
+# list of viral accessions in RefSeq
+ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
+# flag to enbable debug mode
+DEBUGMODE: 0
+

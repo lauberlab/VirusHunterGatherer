@@ -171,6 +171,7 @@ sub init {
 
 	# determine size requirements for this run
 	$sraSize = `du $fastqF | awk '{print \$1};'`;  chomp( $sraSize );
+	$sraSize = $sraSize / 1024 / 1024;
 
 	# set profile file
 	$proFile = "$workflowDir/2_profiles/$family-profile.hmm";
@@ -618,7 +619,7 @@ sub filter2{
 	my $idsin  = shift;
 	my $idsout = shift;
 	my $fasout = shift;
-	my $cntgs  = shift;
+	my $cntgs  = shift;16543.hunter_test
 	printf "[virushunter] \t$sraid: filtering - tblastx against viral_genomic\n";
 	# read query sequence IDs from file
 	open( IDSIN, "<$idsin" ) or die ( "Can't open file '$idsin': $!\n" );

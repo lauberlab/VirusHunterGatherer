@@ -18,7 +18,7 @@
 ./virushunterTWC.pl \
 	RNAviruses \
 	/data/tests/SRA_n1/DRR067307.fastq.gz \
-	test_n1_small \
+	test_SRA_n1 \
 	DRR067307 \
 	/data/virushunter \
 	12 \
