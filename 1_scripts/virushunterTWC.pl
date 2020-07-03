@@ -162,7 +162,11 @@ sub init {
 	}
 	if( ! -d "$tmpdir/$family/$projID" ){
 		`mkdir $tmpdir/$family/$projID`;
+	}
+	if( ! -d "$tmpdir/$family/$projID/log" ){
 		`mkdir $tmpdir/$family/$projID/log`;
+	}
+	if( ! -d "$tmpdir/$family/$projID/results" ){
 		`mkdir $tmpdir/$family/$projID/results`;
 	}
 	if( ! -d "$tmpdir/$family/$projID/results/$sraid" ){
@@ -225,6 +229,8 @@ sub cleanup {
 sub end{
 	# write file showing the search is done
 	`echo completed > $resdir/virushunter.done`;
+	# exit with code zero
+	exit( 0 );
 } # end done
 
 
