@@ -1,3 +1,0 @@
-NameError in line 13 of /home/lauber/workflows/01_virushunter/Snakefile:
-name 'glob' is not defined
-  File "/home/lauber/workflows/01_virushunter/Snakefile", line 13, in <module>

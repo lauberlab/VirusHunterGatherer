@@ -1,3 +1,0 @@
-TypeError in line 20 of /home/lauber/workflows/01_virushunter/Snakefile:
-sequence item 0: expected str instance, tuple found
-  File "/home/lauber/workflows/01_virushunter/Snakefile", line 20, in <module>

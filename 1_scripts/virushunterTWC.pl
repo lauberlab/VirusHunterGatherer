@@ -144,6 +144,13 @@ reportResources();
 # ----- #
 cleanup();
 
+
+# --- #
+# END #
+# --- #
+end();
+
+
 # --------- #
 # functions
 # --------- #
@@ -213,6 +220,14 @@ sub cleanup {
 	printf "[virushunter] \t$sraid: done\n\n";
 } # end cleanup
 
+
+# do some last things before ending the scirpt
+sub end{
+	# write file showing the search is done
+	`echo completed > $resdir/virushunter.done`;
+} # end done
+
+
 # preprocess data for Blast or HMMer search
 sub preprocess {
 	printf "[virushunter] \t$sraid: transforming to Fasta format\n";
@@ -281,7 +296,7 @@ sub runtime2hms{
 # run and parse HMMer search
 sub searchByHMMer {
 	# verify that SRA dataset was successfully downloaded
-	exit() if ! -e "$resdir/$sraid.fasta";
+	die( "No data fasta file found!\n" ) if ! -e "$resdir/$sraid.fasta";
 	# init new hits and runtime variables
 	my %hits  = ();
 	# run HMMer
@@ -347,7 +362,7 @@ sub searchByHMMer {
 		}
 		close(HITS);
 	}else{
-		`rm -rf $resdir` if ( $debugMode == 0 );
+		`rm -rf $resdir/*` if ( $debugMode == 0 );
 	}
 	
 	# search runtime for this run
@@ -488,7 +503,7 @@ sub searchRefSeq{
 		my $etime = time();
 		$rtimeF   = ($etime - $stime - $rtimeP - $rtimeS);
 		# end here
-		`rm -rf $resdir` if ( $debugMode == 0 );
+		`rm -rf $resdir/*` if ( $debugMode == 0 );
 		return 0;
 	}
 	# summarize final hits
@@ -593,7 +608,7 @@ sub filter1{
 	# blast
 	#my $blastfile = $fasout."-tblastx.tsv";
 	my $blastfile = $fasout."-blastn.tsv";
-	#my $cmd = "tblastx -db $filterDB -query $fasout -outfmt '6 qseqid sseqid pident evalue' -evalue $DBblastEh -num_threads $threads > $blastfile";
+	#my $cmd = "tblastx -db $16543.hunter_testfilterDB -query $fasout -outfmt '6 qseqid sseqid pident evalue' -evalue $DBblastEh -num_threads $threads > $blastfile";
 	my $cmd = "blastn -db $filterDB -query $fasout -outfmt '6 qseqid sseqid pident evalue' -evalue $DBblastEh -num_threads $threads > $blastfile";
 	`$cmd 2>/dev/null`;
 	# get hits

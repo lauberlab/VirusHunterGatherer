@@ -1,2 +1,0 @@
-SyntaxError in line 25 of /home/lauber/workflows/01_virushunter/Snakefile:
-Expected name or colon after rule or checkpoint keyword. (Snakefile, line 25)

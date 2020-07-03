@@ -23,7 +23,7 @@ rule all:
  message:
   "Running everything"
  input:
-  expand( RESDIR+"/{sample}/final.hits.tsv", sample=SAMPLES )
+  expand( RESDIR+"/{sample}/virushunter.done", sample=SAMPLES )
 
 rule hunter:
  message:
@@ -31,7 +31,7 @@ rule hunter:
  input:
   fastq=config["FASTQDIR"]+"/{sample}.fastq.gz",
  output:
-  RESDIR+"/{sample}/final.hits.tsv"
+  RESDIR+"/{sample}/virushunter.done"
  params:
   dir1=config["WFLOWDIR"],
   dir2=config["BASEDIR"],

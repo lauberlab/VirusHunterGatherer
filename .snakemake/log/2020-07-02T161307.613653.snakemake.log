@@ -1,2 +1,0 @@
-SyntaxError in line 20 of /home/lauber/workflows/01_virushunter/Snakefile:
-Missing parentheses in call to 'print'. Did you mean print(SAMPLES)?
