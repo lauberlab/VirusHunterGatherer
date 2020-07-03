@@ -172,8 +172,11 @@ sub init {
 	if( ! -d "$tmpdir/$family/$projID/results/$sraid" ){
 		`mkdir $tmpdir/$family/$projID/results/$sraid`;
 	}
+	if( ! -d "$tmpdir/$family/$projID/results/$sraid/virushunter" ){
+		`mkdir $tmpdir/$family/$projID/results/$sraid/virushunter`;
+	}
 	# set directories to work with
-	$resdir = "$tmpdir/$family/$projID/results/$sraid";
+	$resdir = "$tmpdir/$family/$projID/results/$sraid/virushunter";
 	$logdir = "$tmpdir/$family/$projID/log";
 
 	# set databases
@@ -207,7 +210,7 @@ sub cleanup {
 	if ( $debugMode == 0 ){
 		`rm -rf $resdir/$sraid*`;
 	}
-	
+
 	# log global statistics
 	open(  STATS, ">>$logdir/virushunterTWC-search.txt" ) or die("$0: could not open file: $!\n");
 	flock( STATS, 2 ) or die("$0: could not lock file: $!\n");

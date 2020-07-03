@@ -18,20 +18,31 @@ FILES2  = [ os.path.splitext(x)[0] for x in FILES ]
 SAMPLES = [ os.path.splitext(x)[0] for x in FILES2 ]
 RESDIR  = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
 
+if not os.path.exists( config["FASTQDIR"] ):
+	os.system( "mkdir "+config["FASTQDIR"] )
+if config["ACCLIST"] != "":
+	os.system( "wd=`pwd`; cd "+config["FASTQDIR"]+"; awk \'{printf \"%s\\n\", $1>$1\".txt\"}\' "+config["ACCLIST"]+"; cd $wd" )
+
+
 # start calculating
+
+# run everything
 rule all:
  message:
   "Running everything"
  input:
-  expand( RESDIR+"/{sample}/virushunter.done", sample=SAMPLES )
+  expand( config["FASTQDIR"]+"/{sample}.fastq.gz",         sample=SAMPLES ),
+  expand( RESDIR+"/{sample}/virushunter/virushunter.done", sample=SAMPLES )
 
+
+# virushunter search
 rule hunter:
  message:
   "Executing virushunter search"
  input:
-  fastq=config["FASTQDIR"]+"/{sample}.fastq.gz",
+  config["FASTQDIR"]+"/{sample}.fastq.gz",
  output:
-  RESDIR+"/{sample}/virushunter.done"
+  RESDIR+"/{sample}/virushunter/virushunter.done"
  params:
   dir1=config["WFLOWDIR"],
   dir2=config["BASEDIR"],
@@ -46,5 +57,24 @@ rule hunter:
   flag1=config["MAPHG38"],
   flag2=config["DEBUGMODE"]
  shell:
-  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input.fastq} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2}"
+  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2}"
+
+
+# download data if not present
+rule SRA_download: 
+ message:
+  "Downloading SRA data"
+ input:
+  config["FASTQDIR"]+"/{sample}.txt"
+ output:
+  config["FASTQDIR"]+"/{sample}.fastq.gz"
+ params:
+  dir1=config["WFLOWDIR"],
+  dir2=config["FASTQDIR"]
+ shell:
+  "{params.dir1}/1_scripts/downloadSRA.pl {input} {params.dir2}"
+
+
+# virusgatherer with CAP3 assembler
+# rule gatherer_cap3:
 
