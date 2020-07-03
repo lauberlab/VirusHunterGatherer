@@ -47,6 +47,6 @@ DBVIRAL:   "/data/db/RefSeq/viral_genomic/viral_genomic"
 ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
 #
 # flag to enbable debugging mode
-DEBUGMODE: 0
+DEBUGMODE: 1
 #
 

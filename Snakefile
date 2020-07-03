@@ -12,16 +12,25 @@ import glob
 # get parameters via config file
 configfile: "config.yaml"
 
-# process input
-FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.fastq.gz" ) ]
-FILES2  = [ os.path.splitext(x)[0] for x in FILES ]
-SAMPLES = [ os.path.splitext(x)[0] for x in FILES2 ]
+# directories
 RESDIR  = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
-
 if not os.path.exists( config["FASTQDIR"] ):
 	os.system( "mkdir "+config["FASTQDIR"] )
-if config["ACCLIST"] != "":
+
+# sample IDs
+SAMPLES = []
+if config["ACCLIST"] == "":
+	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.fastq.gz" ) ]
+	FILES2  = [ os.path.splitext(x)[0] for x in FILES ]
+	SAMPLES = [ os.path.splitext(x)[0] for x in FILES2 ]
+else:
 	os.system( "wd=`pwd`; cd "+config["FASTQDIR"]+"; awk \'{printf \"%s\\n\", $1>$1\".txt\"}\' "+config["ACCLIST"]+"; cd $wd" )
+	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.txt" ) ]
+	SAMPLES = [ os.path.splitext(x)[0] for x in FILES ]
+
+# for debugging	
+#print(RESDIR)
+#print( ",".join(SAMPLES) )
 
 
 # start calculating
@@ -40,7 +49,7 @@ rule hunter:
  message:
   "Executing virushunter search"
  input:
-  config["FASTQDIR"]+"/{sample}.fastq.gz",
+  config["FASTQDIR"]+"/{sample}.fastq.gz"
  output:
   RESDIR+"/{sample}/virushunter/virushunter.done"
  params:
@@ -72,9 +81,8 @@ rule SRA_download:
   dir1=config["WFLOWDIR"],
   dir2=config["FASTQDIR"]
  shell:
-  "{params.dir1}/1_scripts/downloadSRA.pl {input} {params.dir2}"
+  "{params.dir1}/1_scripts/downloadFromSRA.pl {input} {params.dir2}"
 
 
 # virusgatherer with CAP3 assembler
-# rule gatherer_cap3:
 

@@ -19,7 +19,7 @@ close(SID);
 `prefetch $sraid -O $outdir`;
 
 # unpack
-`fastq-dump -O $outdir -B --split-spot --skip-technical --readids --gzip --clip $sraid.sra`;
+`fastq-dump -O $outdir -B --split-spot --skip-technical --readids --gzip --clip $outdir/$sraid.sra`;
 
 # clean
 `rm $outdir/$sraid.sra`;
