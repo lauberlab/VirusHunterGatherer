@@ -13,7 +13,7 @@ import glob
 configfile: "config.yaml"
 
 # directories
-RESDIR  = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
+RESDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
 if not os.path.exists( config["FASTQDIR"] ):
 	os.system( "mkdir "+config["FASTQDIR"] )
 
@@ -40,8 +40,8 @@ rule all:
  message:
   "Running everything"
  input:
-  expand( config["FASTQDIR"]+"/{sample}.fastq.gz",         sample=SAMPLES ),
-  expand( RESDIR+"/{sample}/virushunter/virushunter.done", sample=SAMPLES )
+  expand( config["FASTQDIR"]+"/{sample}.fastq.gz",                sample=SAMPLES ),
+  expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz", sample=SAMPLES )
 
 
 # virushunter search
@@ -51,7 +51,7 @@ rule hunter:
  input:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  output:
-  RESDIR+"/{sample}/virushunter/virushunter.done"
+  RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz"
  params:
   dir1=config["WFLOWDIR"],
   dir2=config["BASEDIR"],

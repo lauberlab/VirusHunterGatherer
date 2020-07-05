@@ -55,6 +55,7 @@ my $sraSize;
 my $resdir;
 my $logdir;
 my $proFile;
+my $LOGF;
 
 # --------------- #
 # usage and input
@@ -163,8 +164,11 @@ sub init {
 	if( ! -d "$tmpdir/$family/$projID" ){
 		`mkdir $tmpdir/$family/$projID`;
 	}
-	if( ! -d "$tmpdir/$family/$projID/log" ){
-		`mkdir $tmpdir/$family/$projID/log`;
+	if( ! -d "$tmpdir/$family/$projID/logs" ){
+		`mkdir $tmpdir/$family/$projID/logs`;
+	}
+	if( ! -d "$tmpdir/$family/$projID/logs/virushunter" ){
+		`mkdir $tmpdir/$family/$projID/logs/virushunter`;
 	}
 	if( ! -d "$tmpdir/$family/$projID/results" ){
 		`mkdir $tmpdir/$family/$projID/results`;
@@ -177,7 +181,7 @@ sub init {
 	}
 	# set directories to work with
 	$resdir = "$tmpdir/$family/$projID/results/$sraid/virushunter";
-	$logdir = "$tmpdir/$family/$projID/log";
+	$logdir = "$tmpdir/$family/$projID/logs/virushunter";
 
 	# set databases
 	$viralDB   .= "_$family"  if ( -e $viralDB."_$family.nhr"  or  -e $viralDB."_$family.nal" );
@@ -193,10 +197,13 @@ sub init {
 	# set paths helper executables
 	$gi2taxExec = "$workflowDir/$gi2taxExec";
 
-	# report hostname and data directory
+	# open log file
+	open( $LOGF, ">$logdir/$sraid"."_virushunter.log" ) or die( "Can't write to log file: $!\n" );
+
+	# record name of machine and data directory
 	my $hostname = `hostname`; chomp( $hostname );
-	printf "[virushunter] \t$sraid: running on %s\n", $hostname;
-	printf "[virushunter] \t$sraid: using data directory %s\n\n", $resdir;
+	printf $LOGF "[virushunter] \t$sraid: running on %s\n", $hostname;
+	printf $LOGF "[virushunter] \t$sraid: using data directory %s\n\n", $resdir;
 
 	# limit threads to 32
 	$threads = $threadsMax       if ( $threads >= ($threadsMax*2) );
@@ -212,26 +219,30 @@ sub cleanup {
 	}
 
 	# log global statistics
-	open(  STATS, ">>$logdir/virushunterTWC-search.txt" ) or die("$0: could not open file: $!\n");
+	open(  STATS, ">>$tmpdir/$family/$projID/logs/virushunterTWC-search.txt" ) or die("$0: could not open file: $!\n");
 	flock( STATS, 2 ) or die("$0: could not lock file: $!\n");
 	printf STATS "%s\t%s\t%.4f\t%d\t%d\n", $sraid, $projID, $sraSize, $rtimeS+$rtimeF, $threads;
 	close( STATS ) or die("$0: could not close file: $!\n");
 
 	# log this runs as completed
-	open( LOG, ">>$logdir/virushunterTWC-completed.txt" ) or die("$0: could not open file: $!\n");
+	open( LOG, ">>$tmpdir/$family/$projID/logs/virushunterTWC-completed.txt" ) or die("$0: could not open file: $!\n");
 	flock(LOG, 2) or die("$0: could not lock file: $!\n");
 	print LOG $sraid."\n";
 	close(LOG) or die("$0: could not close file: $!\n");
 	
 	# THE END
-	printf "[virushunter] \t$sraid: done\n\n";
+	printf $LOGF "[virushunter] \t$sraid: done\n\n";
 } # end cleanup
 
 
 # do some last things before ending the scirpt
 sub end{
+	# put empty contig file if not present (needed for snakemake)
+	`touch $resdir/contigs.singlets.fas.gz` if ( ! -e "$resdir/contigs.singlets.fas.gz" );
 	# write file showing the search is done
 	`echo completed > $resdir/virushunter.done`;
+	# close log filehandle
+	close( $LOGF );
 	# exit with code zero
 	exit( 0 );
 } # end done
@@ -239,7 +250,7 @@ sub end{
 
 # preprocess data for Blast or HMMer search
 sub preprocess {
-	printf "[virushunter] \t$sraid: transforming to Fasta format\n";
+	printf $LOGF "[virushunter] \t$sraid: transforming to Fasta format\n";
 	my $read1id = `zcat $fastqF | head -n 1`;
 	my $read2id = `zcat $fastqF | head -n 5 | tail -n 1`;
 	chomp($read1id);
@@ -261,7 +272,7 @@ sub preprocess {
 	
 	# create 6-frame translation database if needed
 	if ( ! -e "$resdir/$sraid-aa-F1.fasta" ){
-		printf "[virushunter] \t$sraid: creating 6 single-frame translation DBs for HMMer\n";
+		printf $LOGF "[virushunter] \t$sraid: creating 6 single-frame translation DBs for HMMer\n";
 		my $pm = new Parallel::ForkManager( $threads );
 		for ( my $fi=1; $fi<=6; $fi++ ){
 			# begin fork
@@ -286,10 +297,10 @@ sub preprocess {
 # report total runtime and size of SRA dataset
 sub reportResources{
 	# report runtimes of different parts
-	printf "\n[virushunter] \t$sraid: runtime preprocess part : %s\n", runtime2hms( $rtimeP );
-	printf   "[virushunter] \t$sraid: runtime search     part : %s\n", runtime2hms( $rtimeS );
-	printf   "[virushunter] \t$sraid: runtime filter     part : %s\n", runtime2hms( $rtimeF );
-	printf   "[virushunter] \t$sraid: total runtime           : %s for %.2f Gb\n", runtime2hms( $rtimeP+$rtimeS+$rtimeF+$rtimeM ), $sraSize;
+	printf $LOGF "\n[virushunter] \t$sraid: runtime preprocess part : %s\n", runtime2hms( $rtimeP );
+	printf $LOGF   "[virushunter] \t$sraid: runtime search     part : %s\n", runtime2hms( $rtimeS );
+	printf $LOGF   "[virushunter] \t$sraid: runtime filter     part : %s\n", runtime2hms( $rtimeF );
+	printf $LOGF   "[virushunter] \t$sraid: total runtime           : %s for %.2f Gb\n", runtime2hms( $rtimeP+$rtimeS+$rtimeF+$rtimeM ), $sraSize;
 } # end reportResources
 
 # runtime for h-min-sec format
@@ -311,7 +322,7 @@ sub searchByHMMer {
 	# run HMMer
 	my $threads_frame = int( $threads / 6 );
 	   $threads_frame = 1 if ( $threads_frame < 1 );
-	printf "[virushunter] \t$sraid: running  6 single-frame HMMer searches using %d threads each\n", $threads_frame;
+	printf $LOGF "[virushunter] \t$sraid: running  6 single-frame HMMer searches using %d threads each\n", $threads_frame;
 	my $Ecut = $hmmerE > 10 ? $hmmerE : 10;
 	my $targetNum  = `grep -c '>' $resdir/$sraid-aa-F1.fasta`;  chomp( $targetNum );
 	   $targetNum *= 6; # set database size to 6 times the number of reads (because we search each reading frame separately) 
@@ -371,6 +382,7 @@ sub searchByHMMer {
 		}
 		close(HITS);
 	}else{
+		`rm -rf $resdir/$sraid.fasta`;
 		`rm -rf $resdir/*` if ( $debugMode == 0 );
 	}
 	
@@ -379,9 +391,9 @@ sub searchByHMMer {
 	$rtimeS   = ($etime - $stime - $rtimeP);
 	
 	# report final info for this run
-	printf "[virushunter] \t$sraid: hmmsearch hits:            %d\n",   $numhits;
-	printf "[virushunter] \t$sraid: best E-value:              %.1e\n", $evalMin;
-	printf "[virushunter] \t$sraid: detected as hit:           %s\n",   $iamhit;
+	printf $LOGF "[virushunter] \t$sraid: hmmsearch hits:            %d\n",   $numhits;
+	printf $LOGF "[virushunter] \t$sraid: best E-value:              %.1e\n", $evalMin;
+	printf $LOGF "[virushunter] \t$sraid: detected as hit:           %s\n",   $iamhit;
 } # end searchByHMMer
 
 
@@ -391,7 +403,7 @@ sub searchRefSeq{
 	return 0 if ! -d "$resdir";
 	# verify that SRA dataset was successfully prepared
 	return 0 if ! -e "$resdir/$sraid.fasta";
-	printf "\n[virushunter] \t$sraid: comparing hits against host and viral reference sequences\n";
+	printf $LOGF "\n[virushunter] \t$sraid: comparing hits against host and viral reference sequences\n";
         # read hits and info from search result file
         my $rawHitsFile = "$resdir/hmmsearch-hits.tsv";
 	my %readHits = ();
@@ -413,7 +425,7 @@ sub searchRefSeq{
 	my $cmd1 = "grep -F --no-group-separator -A 1 -f $rawHitsIDs $resdir/$sraid.fasta > $rawHitsFas";
 	`$cmd1`;
 	# assemble reads to contigs
-	printf "[virushunter] \t$sraid: assembling initial hits with $assembler\n";
+	printf $LOGF "[virushunter] \t$sraid: assembling initial hits with $assembler\n";
 	my $assLog      = $rawHitsFas.".cap.log";
 	my $assContigs  = $rawHitsFas.".cap.contigs";
 	my $assSinglets = $rawHitsFas.".cap.singlets";
@@ -555,7 +567,7 @@ sub searchRefSeq{
 		$res->{ $vid }->{ 'refseq_contigs' }++;
 	}
 	# annotate final hits with taxonomy info
-	printf "[virushunter] \t$sraid: adding taxonomy annotation for final viral reference sequence hits\n";	
+	printf $LOGF "[virushunter] \t$sraid: adding taxonomy annotation for final viral reference sequence hits\n";	
 	my $giFile = "$resdir/$sraid-FinalHits-gis.txt";
 	open( GI, ">$giFile" ) or die( "Can't open file '$giFile': $!\n" );
 	foreach my $gi ( keys %{$res} ){
@@ -599,8 +611,8 @@ sub filter1{
 	my $idsout = shift;
 	my $fasout = shift;
 	my $cntgs  = shift;
-	#printf "[virushunter] \t$sraid: filtering - tblastx against custom contaminant DB\n";
-	printf "[virushunter] \t$sraid: filtering -  blastn against custom contaminant DB\n";
+	#printf $LOGF "[virushunter] \t$sraid: filtering - tblastx against custom contaminant DB\n";
+	printf $LOGF "[virushunter] \t$sraid: filtering -  blastn against custom contaminant DB\n";
 	# read query sequence IDs from file
 	open( IDSIN, "<$idsin" ) or die ( "Can't open file '$idsin': $!\n" );
 	my %ids = ();
@@ -635,7 +647,7 @@ sub filter1{
 	}
 	close(IDSOUT);
 	# report remaining number of sequences
-	printf "[virushunter] \t$sraid: filtering -  %d hits remaining\n", scalar keys %ids;
+	printf $LOGF "[virushunter] \t$sraid: filtering -  %d hits remaining\n", scalar keys %ids;
 } # end filter1
 
 # filter - tblastx against viral_genomic
@@ -644,7 +656,7 @@ sub filter2{
 	my $idsout = shift;
 	my $fasout = shift;
 	my $cntgs  = shift;
-	printf "[virushunter] \t$sraid: filtering - tblastx against viral_genomic\n";
+	printf $LOGF "[virushunter] \t$sraid: filtering - tblastx against viral_genomic\n";
 	# read query sequence IDs from file
 	open( IDSIN, "<$idsin" ) or die ( "Can't open file '$idsin': $!\n" );
 	my %ids = ();
@@ -686,7 +698,7 @@ sub filter2{
 	}
 	close(IDSOUT);
 	# report remaining number of sequences
-	printf "[virushunter] \t$sraid: filtering -  %d hits remaining\n", scalar keys %idsO;
+	printf $LOGF "[virushunter] \t$sraid: filtering -  %d hits remaining\n", scalar keys %idsO;
 } # end filter2
 
 # filter - blastx against non-viral refseq_protein
@@ -695,7 +707,7 @@ sub filter3{
 	my $idsout = shift;
 	my $fasout = shift;
 	my $cntgs  = shift;
-	printf "[virushunter] \t$sraid: filtering -  blastx against non-viral refseq_protein\n";
+	printf $LOGF "[virushunter] \t$sraid: filtering -  blastx against non-viral refseq_protein\n";
 	# read query sequence IDs from file
 	open( IDSIN, "<$idsin" ) or die ( "Can't open file '$idsin': $!\n" );
 	my %ids = ();
@@ -752,7 +764,7 @@ sub filter3{
 	}
 	close(IDSOUT);
 	# report remaining number of sequences
-	printf "[virushunter] \t$sraid: filtering -  %d hits remaining\n", scalar keys %ids;
+	printf $LOGF "[virushunter] \t$sraid: filtering -  %d hits remaining\n", scalar keys %ids;
 } # end filter3
 
 # trim reads using autoadapt
@@ -760,7 +772,7 @@ sub filter3{
 sub trimReads{
 	my $infile  = shift;
 	my $outfile = shift;
-	printf "[virushunter] \t$sraid: trimming adapter sequences and low-quality bases for initial hits\n";
+	printf $LOGF "[virushunter] \t$sraid: trimming adapter sequences and low-quality bases for initial hits\n";
 	# prepare formatted read IDs
 	my $readIDfile = "$infile.fqids";
 	`grep '>' $infile | sed 's/>/@/' > $readIDfile`;
@@ -790,7 +802,7 @@ sub mapRefGenes{
 	return 0 if ! -d "$resdir";
 	# verify that SRA dataset was successfully downloaded
 	return 0 if ! -e "$resdir/$sraid.fasta";
-	printf "\n[virushunter] \t$sraid: mapping reads against reference transcripts\n";
+	printf $LOGF "\n[virushunter] \t$sraid: mapping reads against reference transcripts\n";
 	# quantify via salmon
 	my $cmd  = "salmon quant -l A -i $transcriptsHg38 -r $tmpdir/$sraid.fasta -p $threads";
 	   $cmd .= " -g $genemappingHg38 -o $resdir/$sraid-hg38-salmon > $resdir/$sraid-hg38-salmon.log 2>&1";
