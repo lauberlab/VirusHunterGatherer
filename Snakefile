@@ -6,6 +6,7 @@
 
 # python module import
 import glob
+import getpass
 
 # start snakemaking
 
@@ -17,6 +18,13 @@ RESDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/result
 if not os.path.exists( config["FASTQDIR"] ):
 	os.system( "mkdir "+config["FASTQDIR"] )
 
+# process ID and username
+PID = os.getpid()
+USR = getpass.getuser()
+
+# temporary directory
+TDIR= "/tmp/"+str(USR)+"-"+str(PID)
+
 # sample IDs
 SAMPLES = []
 if config["ACCLIST"] == "":
@@ -24,12 +32,19 @@ if config["ACCLIST"] == "":
 	FILES2  = [ os.path.splitext(x)[0] for x in FILES ]
 	SAMPLES = [ os.path.splitext(x)[0] for x in FILES2 ]
 else:
-	os.system( "wd=`pwd`; cd "+config["FASTQDIR"]+"; awk \'{printf \"%s\\n\", $1>$1\".txt\"}\' "+config["ACCLIST"]+"; cd $wd" )
+	os.system( "mkdir "+TDIR )
+	os.system( "wd=`pwd`; cd "+TDIR+"; awk \'{printf \"%s\\n\", $1>$1\".txt\"}\' "+config["ACCLIST"]+"; cd $wd" )
+	IDFILES = [ os.path.basename(x)    for x in glob.glob( TDIR+"/*.txt" ) ]
+	for idf in IDFILES:
+		if not os.path.exists( config["FASTQDIR"]+"/"+idf ):
+			os.system( "cp "+TDIR+"/"+idf+" "+config["FASTQDIR"]+"/" )
+	os.system( "rm -rf "+TDIR )	
 	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.txt" ) ]
 	SAMPLES = [ os.path.splitext(x)[0] for x in FILES ]
 
 # for debugging	
 #print(RESDIR)
+#print( ",".join(SAMPLES) )
 #print( ",".join(SAMPLES) )
 
 
