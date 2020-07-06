@@ -5,16 +5,16 @@
 #####################################################
 #
 # list with SRA accessions (empty string to use user-specified data)
-ACCLIST:   "/home/lauber/workflows/01_VirusHunterGatherer/3_examples/SRA_n1_acclist.txt"
+ACCLIST:   "/home/lauber/workflows/01_VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
 #
 # directory with fastq files
-FASTQDIR:  "/data/tests/SRA_n1_test"
+FASTQDIR:  "/data/tests/SRA_n3_test"
 #
 # group of viruses to search for (RNAviruses, smallDNAviruses, largeDNAviruses)
 VIRFAM:    "RNAviruses"
 #
 # name of project folder
-PROJECTID: "test_SRA_n1"
+PROJECTID: "test_SRA_n3"
 #
 # number of threads to use for analysis of individual datasets
 THREADS:   6
