@@ -21,12 +21,12 @@
 	SRA_n1 \
 	DRR067307 \
 	/data/virushunter \
-	12 \
+	24 \
 	/data/db/RefSeq/filter/filter \
 	/data/db/RefSeq/refseq_protein/refseq_protein \
 	/data/db/RefSeq/viral_genomic/viral_genomic \
 	/data/db/RefSeq/viral_protein/viral_protein.acc_list \
-	/home/lauber/workflows/01_virushunter \
+	/home/lauber/workflows/01_VirusHunterGatherer \
 	0 \
 	1
 

@@ -36,13 +36,14 @@ my $cap_overlap   = 17; # in nt
 
 my $resdir;
 my $logdir;
+my $sraSize;
 my $LOGF;
 
 
 # --------------- #
 # usage and input
 # --------------- #
-if ( $#ARGV < 2 ){
+if ( $#ARGV != 10 ){
 die("
 usage: virusgathererTWC.pl <parameters>\n
 parameters:
@@ -80,7 +81,7 @@ my $debugMode     = shift;
 # -------------- #
 # initialization
 # -------------- #
-my ($stime, $etime, $rtime, $ho, $mi);
+my ($stime, $rtimeP, $rtimeA, $rtimeV) = (0,0,0,0);
 $stime = time();
 init();
 
@@ -123,7 +124,7 @@ end();
 # run iterative assembly using GenSeed-HMM
 sub runGenseed{
 	# define seed for Genseed-HMM
-	printf "[virusgatherer] using virushunter contigs as seed\n";
+	printf "[virusgatherer] \t$sraid: using virushunter contigs as seed\n";
 	my $seedFile = "$resdir/seed/virushunter.fasta";
 	# iteratively assemble seed contigs/singlets to super-contigs
 	my ( $capLog, $capContigs, $capSinglets, $capMerged );
@@ -145,7 +146,7 @@ sub runGenseed{
 	`mv $seedFile $resdir/seed/seed.fasta`;
 	$seedFile = "$resdir/seed/seed.fasta";
 	# run GenSeed-HMM
-	printf $LOGF "[virusgatherer] running GenSeed-HMM for iterative assembly\n";
+	printf $LOGF "[virusgatherer] \t$sraid: running GenSeed-HMM for iterative assembly\n";
 	my $cmd  = "$GenSeedExec"; 
 	   $cmd .= sprintf " -seed %s",				$seedFile;
 	   $cmd .= sprintf " -db %s",				"$resdir/data/$sraid.fasta";
@@ -169,6 +170,10 @@ sub runGenseed{
 	   $cmd .= sprintf " -exp_direction right", if ( $GS_direction eq "r" );
 	#printf "[virusgatherer] command: %s\n", $cmd;
 	`$cmd`;
+
+	# runtime
+	my $etime = time();
+	$rtimeA   = ($etime - $stime - $rtimeP);
 } # end runGenseed
 
 
@@ -197,15 +202,19 @@ sub runBlastViral{
 	my $blastResFile    = "$finalContigFile-vs-viral-blastx.tsv";
 	# run blast
 	if ( -e $finalContigFile ){
-		printf $LOGF "[virusgatherer] Running blast of final contigs against viral reference DB\n";
+		printf $LOGF "[virusgatherer] \t$sraid: Running blast of final contigs against viral reference DB\n";
 		my $blastcmd  = "blastx -query $finalContigFile -db $refseqDB -seqidlist $refseqNegIDs";
 		   $blastcmd .= " -num_threads $threads -max_hsps 1 -max_target_seqs 1 ";
 		   $blastcmd .= " -outfmt '6 qseqid qlen evalue pident length sacc stitle'";
 		`$blastcmd > $blastResFile`;
 	}
 	else{
-		printf $LOGF "[virusgatherer] No final contig file to be used by blast found\n";
+		printf $LOGF "[virusgatherer] \t$sraid: No final contig file to be used by blast found\n";
 	}
+
+	# runtime
+	my $etime = time();
+	$rtimeV   = ($etime - $stime - $rtimeP - $rtimeA);
 } # end runBlastViral
 
 
@@ -229,13 +238,17 @@ sub init{
 	$resdir = "$tmpdir/$family/$projID/results/$sraid/virusgatherer";
 	$logdir = "$tmpdir/$family/$projID/logs/virusgatherer";
 
+	# determine size requirements for this run
+	$sraSize = `du $fastqF | awk '{print \$1};'`;  chomp( $sraSize );
+	$sraSize = $sraSize / 1024 / 1024;
+
 	# open log file
 	open( $LOGF, ">$logdir/$sraid"."_virusgatherer.log" ) or die( "Can't write to log file: $!\n" );
 
 	# record name of machine and data directory
 	my $hostname = `hostname`; chomp( $hostname );
 	printf $LOGF "[virusgatherer] \t$sraid: running on %s\n", $hostname;
-	printf $LOGF "[virusgatherer] \t$sraid: using data directory %s\n\n", $resdir;
+	printf $LOGF "[virusgatherer] \t$sraid: using directory %s\n\n", $resdir;
 
 } # end init
 
@@ -243,7 +256,7 @@ sub init{
 # prepare fastq data and seed file
 sub preprocess{
 	# fastq to fasta data transformation incl. trimming
-	printf $LOGF "[virusgather] \t$sraid: transforming to Fasta format\n";
+	printf $LOGF "[virusgatherer] \t$sraid: transforming to Fasta format\n";
 	my $read1id = `zcat $fastqF | head -n 1`;
 	my $read2id = `zcat $fastqF | head -n 5 | tail -n 1`;
 	chomp($read1id);
@@ -264,7 +277,22 @@ sub preprocess{
 
 	# seed file
 	`zcat $hunterContigF > $resdir/seed/virushunter.fasta`;
+
+	# runtime
+	my $etime = time();
+	$rtimeP   = ($etime - $stime);
 }
+
+
+# runtime for h-min-sec format
+sub runtime2hms{
+	my $rtime = shift;
+	my $ho    = floor( $rtime / 3600 );  $rtime -= $ho * 3600;
+	my $mi    = floor( $rtime /   60 );  $rtime -= $mi *   60;
+	my $hms   = sprintf "%2d h %2d min %2d sec", $ho, $mi, $rtime;
+	return( $hms );
+} # end runtime2hms
+
 
 
 # clean up stuff
@@ -274,12 +302,11 @@ sub cleanup{
 		`rm -rf $resdir/seed/virushunter.fasta.*`;
 	}
 
-	# log end time and calculate runtime
-	$etime = time();
-	$rtime = $etime - $stime;
-	$ho = int( $rtime / 3600 );  $rtime -= $ho * 3600;
-	$mi = int( $rtime /   60 );  $rtime -= $mi *   60;
-	printf $LOGF "[virusgatherer] done - runtime: %d h %d min %d sec\n", $ho, $mi, $rtime;
+	# report resources
+	printf $LOGF "\n[virusgatherer] \t$sraid: runtime preprocess  part : %s\n", runtime2hms( $rtimeP );
+	printf $LOGF   "[virusgatherer] \t$sraid: runtime assembly    part : %s\n", runtime2hms( $rtimeA );
+	printf $LOGF   "[virusgatherer] \t$sraid: runtime viral blast part : %s\n", runtime2hms( $rtimeV );
+	printf $LOGF   "[virusgatherer] \t$sraid: total runtime            : %s for %.2f Gb\n", runtime2hms( $rtimeP+$rtimeA+$rtimeV ), $sraSize;
 } # end cleanup
 
 
