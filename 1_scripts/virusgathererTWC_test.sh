@@ -11,7 +11,8 @@
 #  8) assembler
 #  9) protein refseq host+virus database
 # 10) identifiers of viral entries in protein refseq database
-# 11) flag for debugging mode [0=no, 1=yes]
+# 11) path to workflow base directory
+# 12) flag for debugging mode [0=no, 1=yes]
 
 ./virusgathererTWC.pl \
 	RNAviruses \
@@ -24,5 +25,6 @@
 	cap3 \
 	/data/db/RefSeq/refseq_protein/refseq_protein \
 	/data/db/RefSeq/viral_protein/viral_protein.acc_list \
+	/home/lauber/workflows/01_VirusHunterGatherer \
 	1
 

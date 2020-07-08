@@ -74,7 +74,7 @@ parameters:
 \t<refseqDB>
 \t<viralDB>
 \t<viralRefSeqIDs>
-\t<workflowDir>
+\t<workflow_dir>
 \t<filterHg38> [0|1]
 \t<debugMode>  [0|1]
 \n");

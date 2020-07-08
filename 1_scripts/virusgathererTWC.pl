@@ -13,6 +13,7 @@
 # ------------ #
 use warnings;
 use strict;
+use POSIX;
 #use Data::Dumper;
 
 
@@ -26,24 +27,25 @@ my $GS_blast_ide  = 85;
 my $GS_blast_ws   = 7;
 my $GS_contig_len = 50000;
 my $GS_max_itr    = 100;
-my $GS_aln_th     = 75;
+my $GS_aln_th     = 50;#75;
 my $GS_use_qual   = "no";
 my $GS_starter    = 0;
 my $GS_direction  = "b";
 my $cap_identity  = 85;
 my $cap_overhang  = 99; # in %
-my $cap_overlap   = 17; # in nt
+my $cap_overlap   = 20; # in nt
 
 my $resdir;
 my $logdir;
 my $sraSize;
 my $LOGF;
+my $run_this;
 
 
 # --------------- #
 # usage and input
 # --------------- #
-if ( $#ARGV != 10 ){
+if ( $#ARGV != 11 ){
 die("
 usage: virusgathererTWC.pl <parameters>\n
 parameters:
@@ -57,6 +59,7 @@ parameters:
 \t<assembler>
 \t<refseqDB>
 \t<viralRefSeqIDs>
+\t<workflow_dir>
 \t<debugMode> [0|1]
 \n");
 }
@@ -75,6 +78,7 @@ my $threads       = shift;
 my $assembler     = shift;
 my $refseqDB      = shift;
 my $refseqNegIDs  = shift;
+my $workflowDir   = shift;
 my $debugMode     = shift;
 
 
@@ -84,6 +88,7 @@ my $debugMode     = shift;
 my ($stime, $rtimeP, $rtimeA, $rtimeV) = (0,0,0,0);
 $stime = time();
 init();
+ end()  if ( !$run_this );
 
 
 # ------------ #
@@ -124,7 +129,7 @@ end();
 # run iterative assembly using GenSeed-HMM
 sub runGenseed{
 	# define seed for Genseed-HMM
-	printf "[virusgatherer] \t$sraid: using virushunter contigs as seed\n";
+	printf $LOGF "[virusgatherer] \t$sraid: using virushunter contigs as seed\n";
 	my $seedFile = "$resdir/seed/virushunter.fasta";
 	# iteratively assemble seed contigs/singlets to super-contigs
 	my ( $capLog, $capContigs, $capSinglets, $capMerged );
@@ -168,8 +173,13 @@ sub runGenseed{
 	   $cmd .= sprintf " -aux_starter yes",     if ( $GS_starter == 1 );
 	   $cmd .= sprintf " -exp_direction left",  if ( $GS_direction eq "l" );
 	   $cmd .= sprintf " -exp_direction right", if ( $GS_direction eq "r" );
-	#printf "[virusgatherer] command: %s\n", $cmd;
+	#printf $LOGF "[virusgatherer] command: %s\n", $cmd;
 	`$cmd`;
+
+	# copy final contig file
+	my  $finalContigFileO = "$resdir/results-$assembler/final_result_dir/final_positive_contigs.fasta";
+	my  $finalContigFileN = "$resdir/genseedhmm-$assembler.fasta";
+	`cp $finalContigFileO $finalContigFileN`  if ( -e $finalContigFileO );
 
 	# runtime
 	my $etime = time();
@@ -187,8 +197,8 @@ sub runGenseed{
 #	   $cmd .= sprintf " --left %s --right %s", $fqFiles[0], $fqFiles[1]  if $#fqFiles == 1;
 #	   $cmd .= sprintf " --single %s",          $fqFiles[0],              if $#fqFiles == 0;
 #	# run Trinity
-#	printf "[virusgatherer] running Trinity\n";
-#	printf "$virushunterTWC.plcmd\n";
+#	printf $LOGF "[virusgatherer] running Trinity\n";
+#	printf "$cmd\n";
 #	`$cmd > $tmpdir/trinity.log 2>&1`;
 #	# final contigs
 #	$finalContigFile = "$tmpdir/results-trinity/Trinity.fasta";
@@ -198,7 +208,7 @@ sub runGenseed{
 # blast final contigs against viral reference database
 sub runBlastViral{
 	# files
-	my $finalContigFile = "$resdir/results-$assembler/final_result_dir/final_positive_contigs.fasta";
+	my $finalContigFile = "$resdir/genseedhmm-$assembler.fasta";
 	my $blastResFile    = "$finalContigFile-vs-viral-blastx.tsv";
 	# run blast
 	if ( -e $finalContigFile ){
@@ -244,6 +254,10 @@ sub init{
 
 	# open log file
 	open( $LOGF, ">$logdir/$sraid"."_virusgatherer.log" ) or die( "Can't write to log file: $!\n" );
+
+	# only analyze data sets for which virushunter obtained hits
+	$run_this = 1;
+	$run_this = 0  if ( -s $hunterContigF == 0 );
 
 	# record name of machine and data directory
 	my $hostname = `hostname`; chomp( $hostname );
@@ -313,7 +327,7 @@ sub cleanup{
 # do some last things before ending the scirpt
 sub end{
 	# put empty contig file if not present (needed for snakemake)
-	#`touch $resdir/contigs.singlets.fas.gz` if ( ! -e "$resdir/contigs.singlets.fas.gz" );
+	`touch $resdir/genseedhmm-$assembler.fasta`  if ( ! -e "$resdir/genseedhmm-$assembler.fasta" );
 	# write file showing the search is done
 	`echo completed > $resdir/virusgatherer.done`;
 	# close log filehandle

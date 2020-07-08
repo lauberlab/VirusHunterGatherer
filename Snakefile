@@ -15,6 +15,7 @@ configfile: "config.yaml"
 
 # directories
 RESDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
+LOGDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/logs"
 if not os.path.exists( config["FASTQDIR"] ):
 	os.system( "mkdir "+config["FASTQDIR"] )
 
@@ -55,8 +56,9 @@ rule all:
  message:
   "Running everything"
  input:
-  expand( config["FASTQDIR"]+"/{sample}.fastq.gz",                sample=SAMPLES ),
-  expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz", sample=SAMPLES )
+  expand( config["FASTQDIR"]+"/{sample}.fastq.gz",                                   sample=SAMPLES ),
+  expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz",                    sample=SAMPLES ),
+  expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES )
 
 
 # virushunter search
@@ -67,21 +69,23 @@ rule hunter:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  output:
   RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz"
+ log:
+  err   = LOGDIR+"/virushunter/{sample}_virushunter.err"
  params:
-  dir1=config["WFLOWDIR"],
-  dir2=config["BASEDIR"],
-  vfam=config["VIRFAM"],
-  cpus=config["THREADS"],
-  sid="{sample}",
-  pid=config["PROJECTID"],
-  db1=config["DBFILTER"],
-  db2=config["DBREFSEQ"],
-  db3=config["DBVIRAL"],
-  db4=config["ACCSVIRAL"],
-  flag1=config["MAPHG38"],
-  flag2=config["DEBUGMODE"]
+  dir1  = config["WFLOWDIR"],
+  dir2  = config["BASEDIR"],
+  vfam  = config["VIRFAM"],
+  cpus  = config["THREADS"],
+  sid   = "{sample}",
+  pid   = config["PROJECTID"],
+  db1   = config["DBFILTER"],
+  db2   = config["DBREFSEQ"],
+  db3   = config["DBVIRAL"],
+  db4   = config["ACCSVIRAL"],
+  flag1 = config["MAPHG38"],
+  flag2 = config["DEBUGMODE"]
  shell:
-  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2}"
+  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2} 2> {log.err}"
 
 
 # download data if not present
@@ -93,11 +97,36 @@ rule SRA_download:
  output:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  params:
-  dir1=config["WFLOWDIR"],
-  dir2=config["FASTQDIR"]
+  dir1 = config["WFLOWDIR"],
+  dir2 = config["FASTQDIR"]
  shell:
   "{params.dir1}/1_scripts/downloadFromSRA.pl {input} {params.dir2}"
 
 
-# virusgatherer with CAP3 assembler
+# virusgatherer assembly
+rule gatherer:
+ message:
+  "Executing virusgatherer assembly using "+config["ASSEMBLER"]
+ input:
+  fastq = config["FASTQDIR"]+"/{sample}.fastq.gz",
+  seed  = RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz"
+ output:
+  RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta"
+ log:
+  err   = LOGDIR+"/virusgatherer/{sample}_virusgatherer.err"
+ params:
+  dir1  = config["WFLOWDIR"],
+  dir2  = config["BASEDIR"],
+  vfam  = config["VIRFAM"],
+  cpus  = config["THREADS"],
+  sid   = "{sample}",
+  pid   = config["PROJECTID"],
+  ass   = config["ASSEMBLER"],
+  db1   = config["DBREFSEQ"],
+  db2   = config["ACCSVIRAL"],
+  flag1 = config["DEBUGMODE"]
+ shell:
+  "{params.dir1}/1_scripts/virusgathererTWC.pl {params.vfam} {input.fastq} {params.pid} {params.sid} {input.seed} {params.dir2} {params.cpus} {params.ass} {params.db1} {params.db2} {params.dir1} {params.flag1} 2> {log.err}"
+
+
 

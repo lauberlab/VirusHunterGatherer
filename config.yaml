@@ -19,6 +19,9 @@ PROJECTID: "test_SRA_n3"
 # number of threads to use for analysis of individual datasets
 THREADS:   6
 #
+# assembler to be used for seed-based assembly using Genseed-HMM
+ASSEMBLER: "cap3"
+#
 # flag to enbable mapping against human genome; only recommended when analysing human samples
 MAPHG38:   0
 #
