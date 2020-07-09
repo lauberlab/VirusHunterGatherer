@@ -4,6 +4,9 @@
 #                                                   #
 #####################################################
 #
+# workflow base directory
+WFLOWDIR:  "/home/lauber/workflows/01_VirusHunterGatherer"
+#
 # list with SRA accessions (empty string to use user-specified data)
 ACCLIST:   "/home/lauber/workflows/01_VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
 #
@@ -30,9 +33,6 @@ MAPHG38:   0
 # parameters usually adjusted by the user only once #
 #                                                   #
 #####################################################
-#
-# workflow base directory
-WFLOWDIR:  "/home/lauber/workflows/01_VirusHunterGatherer"
 #
 # base directoy where results are saved
 BASEDIR:   "/data/virushunter"

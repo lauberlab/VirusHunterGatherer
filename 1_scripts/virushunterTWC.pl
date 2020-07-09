@@ -68,7 +68,7 @@ parameters:
 \t<fastq_file>
 \t<project_id>
 \t<run_id>
-\t<tmp_dir>
+\t<base_dir>
 \t<threads>
 \t<filterDB>
 \t<refseqDB>
