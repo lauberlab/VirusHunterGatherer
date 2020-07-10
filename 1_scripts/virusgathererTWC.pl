@@ -215,7 +215,7 @@ sub runBlastViral{
 		printf $LOGF "[virusgatherer] \t$sraid: Running blast of final contigs against viral reference DB\n";
 		my $blastcmd  = "blastx -query $finalContigFile -db $refseqDB -seqidlist $refseqNegIDs";
 		   $blastcmd .= " -num_threads $threads -max_hsps 1 -max_target_seqs 1 ";
-		   $blastcmd .= " -outfmt '6 qseqid qlen evalue pident length sacc stitle'";
+		   $blastcmd .= " -outfmt '6 qseqid qlen evalue pident length sacc stitle staxid'";
 		`$blastcmd > $blastResFile`;
 	}
 	else{
@@ -314,6 +314,7 @@ sub cleanup{
 	# delete temporary files
 	if ( $debugMode == 0 ){
 		`rm -rf $resdir/seed/virushunter.fasta.*`;
+		`rm -rf $resdir/data`;
 	}
 
 	# report resources
