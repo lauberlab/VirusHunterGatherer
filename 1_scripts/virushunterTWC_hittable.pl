@@ -9,7 +9,7 @@ use Data::Dumper;
 # input
 if ( $#ARGV != 3 ){
 die("
-usage: virushunterHPC-hittable.pl <parameters>\n
+usage: virushunterTWC-hittable.pl <parameters>\n
 parameter:
 \t<family>
 \t<project>
@@ -31,7 +31,7 @@ my $showDate = 1;
 if ( $isSRA ){
 	printf "SRA_run\tSRA_sample\tSRA_study\thost_taxon\thost_taxid\tnum_hits\tbest_E\tbest_query\tViralRefSeq_E\tViralRefSeq_ident\tViralRefSeq_aLen/sLen\tViralRefSeq_contigs\tViralRefSeq_subject\tViralRefSeq_taxonomy\tdate_analyzed\n"; 
 }else{
-	printf "ID\tnum_hits\tbest_E\tbest_query\tViralRefSeq_E\tViralRefSeq_ident\tViralRefSeq_aLen/sLen\tViralRefSeq_contigs\tViralRefSeq_subject\tViralRefSeq_taxonomy\tdate_analyzed\n"; 
+	printf "run_id\tnum_hits\tbest_E\tbest_query\tViralRefSeq_E\tViralRefSeq_ident\tViralRefSeq_aLen/sLen\tViralRefSeq_contigs\tViralRefSeq_subject\tViralRefSeq_taxonomy\tdate_analyzed\n"; 
 }
 
 # do for each data set
