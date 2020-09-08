@@ -16,8 +16,11 @@ configfile: "config.yaml"
 # directories
 RESDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
 LOGDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/logs"
+TABDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/hittables"
 if not os.path.exists( config["FASTQDIR"] ):
 	os.system( "mkdir "+config["FASTQDIR"] )
+if not os.path.exists( TABDIR ):
+	os.system( "mkdir "+TABDIR )
 
 # process ID and username
 PID = os.getpid()
@@ -86,6 +89,24 @@ rule hunter:
   flag2 = config["DEBUGMODE"]
  shell:
   "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2} 2> {log.err}"
+
+
+# virushunter hit table
+rule hunter_hittab:
+ message:
+  "Collecting virushunter results"
+ input:
+  expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz", sample = SAMPLES )
+ output:
+  TABDIR+"/virushunter.tsv"
+ params:
+  dir1 = config["WFLOWDIR"],
+  dir2 = config["BASEDIR"],
+  vfam = config["VIRFAM"],
+  pid  = config["PROJECTID"],
+  flag = config["ISSRA"],
+ shell:
+  "{params.dir1}/1_scripts/virushunterTWC_hittable.pl {params.vfam} {params.pid} {params.dir2} {params.flag} > {output}"
 
 
 # download data if not present

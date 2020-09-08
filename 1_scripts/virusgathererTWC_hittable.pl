@@ -129,7 +129,7 @@ sub getTaxForSeqId{
 	}
 	close(ESEARCH);
 	# return result
-	my $taxres = sprintf "taxid:%s%s\n", $taxid, $taxa;
+	my $taxres = sprintf "taxid:%s%s", $taxid, $taxa;
 	return( $taxres );
 } # end getTaxForSeqId
 
