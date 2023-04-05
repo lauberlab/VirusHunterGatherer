@@ -30,6 +30,6 @@ For questions or support, email chris.lauber *at* twincore.de
 
 Lauber C*, Seitz S*, Mattei S, Suh A, Beck J, Herstein J, Börold J, Salzburger W, Kaderali L, Briggs JAG, Bartenschlager R. Deciphering the Origin and Evolution of Hepatitis B Viruses by Means of a Family of Non-enveloped Fish Viruses. *Cell Host Microbe*. 2017 Sep 13;22(3):387-399.e6. [doi: 10.1016/j.chom.2017.07.019](https://pubmed.ncbi.nlm.nih.gov/28867387/).
 
+Lauber C, Vaas J, Klingler F, Mutz, M, Gorbalenya AE, Bartenschlager F, Seitz S. Deep mining of the Sequence Read Archive reveals bipartite coronavirus genomes and inter-family Spike glycoprotein recombination. *bioRxiv*. [doi: https://doi.org/10.1101/2021.10.20.465146](https://www.biorxiv.org/content/10.1101/2021.10.20.465146v1) 
 
-
-* equal contribution
+\* equal contribution
