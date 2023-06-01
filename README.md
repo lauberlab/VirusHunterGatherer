@@ -32,4 +32,6 @@ Lauber C*, Seitz S*, Mattei S, Suh A, Beck J, Herstein J, Börold J, Salzburger 
 
 Lauber C, Vaas J, Klingler F, Mutz, M, Gorbalenya AE, Bartenschlager F, Seitz S. Deep mining of the Sequence Read Archive reveals bipartite coronavirus genomes and inter-family Spike glycoprotein recombination. *bioRxiv*. [doi: https://doi.org/10.1101/2021.10.20.465146](https://www.biorxiv.org/content/10.1101/2021.10.20.465146v1) 
 
+Lauber C, Chong LC. Viroid-like RNA-dependent RNA polymerase-encoding ambiviruses are abundant in complex fungi. *Frontiers Microbiology*. 2023 May 12; Volume 14. [https://doi.org/10.3389/fmicb.2023.1144003](https://doi.org/10.3389/fmicb.2023.1144003)
+
 \* equal contribution
