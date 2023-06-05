@@ -16,7 +16,10 @@ my $sraid = <SID>;  chomp($sraid);
 close(SID);
 
 # download
-`prefetch $sraid -O $outdir`;
+# when using -O, it creates additional $sraid direcory inside the output
+#   direcory, where it puts the .sra. Therefore, let's specify the output file
+#   instead (sra-tools=2.10.0):
+`prefetch $sraid -o $outdir/$sraid.sra`;
 
 # unpack
 `fastq-dump -O $outdir -B --split-spot --skip-technical --readids --gzip --clip $outdir/$sraid.sra`;

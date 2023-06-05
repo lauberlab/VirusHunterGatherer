@@ -5,13 +5,13 @@
 #####################################################
 #
 # workflow base directory
-WFLOWDIR:  "/home/lauber/workflows/01_VirusHunterGatherer"
+WFLOWDIR:  "/home/l848a/repos/VirusHunterGatherer"
 #
 # list with SRA accessions (empty string to use user-specified data)
-ACCLIST:   "/home/lauber/workflows/01_VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
+ACCLIST:   "/home/l848a/repos/VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
 #
 # directory with fastq files
-FASTQDIR:  "/data/tests/SRA_n3_test"
+FASTQDIR:  "/home/l848a/sp4/vhvg_runs/test/SRA_n3_test"
 #
 # group of viruses to search for (RNAviruses, smallDNAviruses, largeDNAviruses)
 VIRFAM:    "RNAviruses"
@@ -38,7 +38,7 @@ MAPHG38:   0
 #####################################################
 #
 # base directoy where results are saved
-BASEDIR:   "/data/virushunter"
+BASEDIR:   "/home/l848a/sp4/vhvg_runs/test"
 #
 # blast database used for 1st filtering step against contaminant sequences
 DBFILTER:  "/data/db/RefSeq/filter/filter"
