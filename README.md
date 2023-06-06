@@ -18,6 +18,13 @@ This is a two-stage computational workflow for data-driven virus discovery from 
  * Bowtie 2
  * snakemake
 
+# Blast databases
+
+You need to install the following Blast databases and specify their file paths and names in the config.yaml:
+ * refseq_protein
+ * viral_genomic
+ * filter (see subfolder 4_databases)
+
 # Support
 
 For questions or support, email chris.lauber *at* twincore.de
