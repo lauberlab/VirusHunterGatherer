@@ -22,6 +22,17 @@ if not os.path.exists( config["FASTQDIR"] ):
 if not os.path.exists( TABDIR ):
 	os.system( "mkdir "+TABDIR )
 
+# check databases
+import subprocess
+
+for db in (config["DBFILTER"], config["DBREFSEQ"], config["DBVIRAL"]):
+	command = ['blastdbcmd', '-db', db, '-info']
+	p = subprocess.run(command, stdout=subprocess.PIPE)
+
+if not os.path.isfile( config["ACCSVIRAL"] ):
+	raise AssertionError(f'\nA file with viral protein accessions is missing or not a file. '
+                         f'Please, check the file: {config["ACCSVIRAL"]}\n')
+
 # process ID and username
 PID = os.getpid()
 USR = getpass.getuser()
