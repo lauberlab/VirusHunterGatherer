@@ -41,16 +41,16 @@ MAPHG38:   0
 BASEDIR:   "/home/l848a/sp4/vhvg_runs/test"
 #
 # blast database used for 1st filtering step against contaminant sequences
-DBFILTER:  "/data/db/RefSeq/filter/filter"
+DBFILTER:  "/home/l848a/vhvg_databases/filter/filter"
 #
 # blast database used for 2nd filtering step against non-viral RefSeq
-DBREFSEQ:  "/data/db/RefSeq/refseq_protein/refseq_protein"
+DBREFSEQ:  "/home/l848a/vhvg_databases/refseq_protein_v4/refseq_protein"
 #
 # blast database used for 3rd filtering step against viral RefSeq
-DBVIRAL:   "/data/db/RefSeq/viral_genomic/viral_genomic"
+DBVIRAL:   "/home/l848a/vhvg_databases/viral_genomic/viral_genomic"
 #
 # list of viral accessions in RefSeq
-ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
+ACCSVIRAL: "/home/l848a/vhvg_databases/viral_protein/viral_protein.acc_list"
 #
 # flag to enbable debugging mode
 DEBUGMODE: 0
