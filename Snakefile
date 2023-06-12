@@ -82,7 +82,7 @@ rule hunter:
  input:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  output:
-  RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz"
+  TABDIR+"/virushunter.tsv"
  log:
   err   = LOGDIR+"/virushunter/{sample}_virushunter.err"
  params:

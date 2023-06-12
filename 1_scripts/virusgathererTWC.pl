@@ -166,7 +166,7 @@ sub runGenseed{
 	   $cmd .= sprintf " -threads %d",			$threads;
 	   $cmd .= sprintf " -max_contig_length %d",		$GS_contig_len;
 	   $cmd .= sprintf " -max_number_rounds %d",		$GS_max_itr;
-	   $cmd .= sprintf " -mapping yes";
+	   $cmd .= sprintf " -mapping no";
 	   $cmd .= sprintf " -align_threshold %d",		$GS_aln_th;
 	   $cmd .= sprintf " -use_qual %s",			$GS_use_qual;
 	   $cmd .= sprintf " -assembler_parameters \"-o $cap_overlap -h $cap_overhang -p $cap_identity\""  if ( $assembler eq "cap3" );
