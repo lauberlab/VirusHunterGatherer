@@ -72,7 +72,8 @@ rule all:
  input:
   expand( config["FASTQDIR"]+"/{sample}.fastq.gz",                                   sample=SAMPLES ),
   expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz",                    sample=SAMPLES ),
-  expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES )
+  expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES ),
+  TABDIR+"/virushunter.tsv"
 
 
 # virushunter search
@@ -82,7 +83,7 @@ rule hunter:
  input:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  output:
-  TABDIR+"/virushunter.tsv"
+  RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz"
  log:
   err   = LOGDIR+"/virushunter/{sample}_virushunter.err"
  params:
