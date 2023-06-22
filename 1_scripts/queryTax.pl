@@ -2,24 +2,24 @@
 
 # input
 if ( $#ARGV != 0 ){
-	die("\nusage: queryTax.pl <file_with_gis>\n\n");
+	die("\nusage: queryTax.pl <file_with_refseq_ids>\n\n");
 }
-my $giFile = shift;
+my $idFile = shift;
 
-# read GIs from file
-my @gis = ();
-open( GIS, "<$giFile" ) or die( "Can't open file '$giFile': $!\n" );
-while ( my $line = <GIS> ){
+# read RefSeq IDs from file
+my @ids = ();
+open( IDS, "<$idFile" ) or die( "Can't open file '$idFile': $!\n" );
+while ( my $line = <IDS> ){
 	chomp( $line );  next if $line eq "";
 	$line =~ s/\|//g;
-	push( @gis, $line );
+	push( @ids, $line );
 }
-close(GIS);
+close(IDS);
 
-# get taxonomy for each GI and send to STDOUT
-foreach my $gi ( @gis ){
+# get taxonomy for each RefSeq ID and send to STDOUT
+foreach my $id ( @ids ){
 	# use esearch to access taxonomy info
-	my $esearch = "efetch -db nucleotide -id $gi -format gpc";
+	my $esearch = "efetch -db nucleotide -id $id -format gpc";
 	my $taxid   = "";
 	my $taxa    = "";
 	open( ESEARCH, "$esearch |" );
@@ -36,6 +36,6 @@ foreach my $gi ( @gis ){
 	}
 	close(ESEARCH);
 	# print to screen
-	printf "%s\ttaxid:%s%s\n", $gi, $taxid, $taxa;
+	printf "%s\ttaxid:%s%s\n", $id, $taxid, $taxa;
 }
 
