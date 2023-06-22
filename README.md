@@ -19,9 +19,13 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 # Blast databases
 
 You need to install the following Blast databases and specify their file paths and names in the config.yaml:
- * refseq_protein
- * viral_genomic
- * filter (see subfolder 4_databases)
+ * refseq_protein (can be downloaded from https://ftp.ncbi.nlm.nih.gov/blast/db/)
+ * viral_protein (the sequences can be downloaded from https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/, only accessions are required)
+ * viral_genomic (the sequences can be downloaded from https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/; use `makeblastdb` command to create a BLAST database)
+
+NOTE: to download only RdRp-encoding RNA viruses, the following command can be used: `esearch -db nucleotide -query "txid2559587[Organism:exp] AND refseq[filter] NOT txid2732397[Organism:exp]" | efetch -format fasta > riboviria.no_pararnavirae.genomic.fna`
+
+ * filter (see subfolder 4_databases; use `makeblastdb` command to create a BLAST database)
 
 # Support
 
