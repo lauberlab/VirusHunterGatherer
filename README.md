@@ -12,7 +12,6 @@ This is a two-stage computational workflow for data-driven virus discovery from 
  * HMMer
  * Genseed-HMM
  * CAP3
- * SPAdes
  * newbler
  * sfffile, sffinfo
  * Bowtie 2
