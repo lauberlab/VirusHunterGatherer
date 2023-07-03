@@ -73,7 +73,8 @@ rule all:
   expand( config["FASTQDIR"]+"/{sample}.fastq.gz",                                   sample=SAMPLES ),
   expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz",                    sample=SAMPLES ),
   expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES ),
-  TABDIR+"/virushunter.tsv"
+  TABDIR+"/virushunter.tsv",
+  TABDIR+"/virusgatherer.tsv"
 
 
 # virushunter search
@@ -119,6 +120,25 @@ rule hunter_hittab:
   flag = config["ISSRA"],
  shell:
   "{params.dir1}/1_scripts/virushunterTWC_hittable.pl {params.vfam} {params.pid} {params.dir2} {params.flag} > {output}"
+
+
+# virusgatherer hit table
+rule gatherer_hittab:
+ message:
+  "Collecting virusgatherer results"
+ input:
+  expand ( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample = SAMPLES )
+ output:
+  TABDIR+"/virusgatherer.tsv"
+ params:
+  dir1 = config["WFLOWDIR"],
+  dir2 = config["BASEDIR"],
+  vfam = config["VIRFAM"],
+  pid = config["PROJECTID"],
+  ass   = config["ASSEMBLER"],
+  flag = config["ISSRA"]
+ shell:
+  "{params.dir1}/1_scripts/virusgathererTWC_hittable.pl {params.vfam} {params.pid} {params.ass} {params.dir2} {params.flag} > {output}"
 
 
 # download data if not present
