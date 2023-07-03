@@ -47,27 +47,16 @@ foreach my $dir ( @hitdirs ){
 	# get taxon from NCBI annotation
 	my ($taxon, $taxid, $srastu, $srasam) = ("","","","");
 	if ( $isSRA){
-		my $wget_cmd = "wget -q -O - 'http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?save=efetch&db=sra&rettype=runinfo&term=$sraid'";
-		my $wget_res = "";
-		my $wget_itr = 0;
-		while ( $wget_res eq "" ){
-			$wget_res = `$wget_cmd`;
-			$wget_itr++;
-			last if $wget_itr > 5;
-			sleep( 12 ) if $wget_res eq "";
-		}
-		if ( $wget_res ne "" ){
-			my @lin = split /\n/, $wget_res;
-			my @hdr = split /,/,  $lin[0];
-			my @val = split /,/,  $lin[1];
-			for ( my $wget_i=0; $wget_i<=$#hdr; $wget_i++ ){
-				$taxon  = $val[ $wget_i ] if ( $hdr[ $wget_i] eq "ScientificName" );
-				$taxid  = $val[ $wget_i ] if ( $hdr[ $wget_i] eq "TaxID" );
-				$srasam = $val[ $wget_i ] if ( $hdr[ $wget_i] eq "Sample" );
-				$srastu = $val[ $wget_i ] if ( $hdr[ $wget_i] eq "SRAStudy" );
-				$taxon =~ s/ /_/g;
-			}
-		}
+		my $command = "esearch -db sra -query $sraid | efetch -format native | xtract -pattern EXPERIMENT_PACKAGE -block SAMPLE -element SCIENTIFIC_NAME -element TAXON_ID -element \@accession -block STUDY -element \@accession";
+		my $output = `$command`;
+		# Remove leading and trailing whitespace from the output
+		$output =~ s/^\s+|\s+$//g;
+		# Split the output into tab-delimited fields
+		my @fields = split(/\t/, $output);
+		$taxon = $fields[0];
+		$taxid = $fields[1];
+		$srasam = $fields[2];
+		$srastu = $fields[3];
 	}
 
 	# get date
