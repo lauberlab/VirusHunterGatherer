@@ -74,7 +74,7 @@ rule all:
   expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz",                    sample=SAMPLES ),
   expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES ),
   TABDIR+"/virushunter.tsv",
-  TABDIR+"/virusgatherer.tsv"
+  TABDIR+"/virusgatherer-"+config["ASSEMBLER"]+".tsv"
 
 
 # virushunter search
@@ -129,7 +129,7 @@ rule gatherer_hittab:
  input:
   expand ( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample = SAMPLES )
  output:
-  TABDIR+"/virusgatherer.tsv"
+  TABDIR+"/virusgatherer-"+config["ASSEMBLER"]+".tsv"
  params:
   dir1 = config["WFLOWDIR"],
   dir2 = config["BASEDIR"],
