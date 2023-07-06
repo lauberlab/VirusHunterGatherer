@@ -180,6 +180,7 @@ sub runGenseed{
 	my  $finalContigFileO = "$resdir/results-$assembler/final_result_dir/final_positive_contigs.fasta";
 	my  $finalContigFileN = "$resdir/genseedhmm-$assembler.fasta";
 	`cp $finalContigFileO $finalContigFileN`  if ( -e $finalContigFileO );
+	`sed -i 's/^>\\(\\S*\\)/>'"$sraid"_"$assembler"'_\\1/' $finalContigFileN`;
 
 	# runtime
 	my $etime = time();
