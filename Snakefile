@@ -14,13 +14,12 @@ import getpass
 configfile: "config.yaml"
 
 # directories
-RESDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
-LOGDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/logs"
-TABDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/hittables"
-if not os.path.exists( config["FASTQDIR"] ):
-	os.system( "mkdir "+config["FASTQDIR"] )
-if not os.path.exists( TABDIR ):
-	os.system( "mkdir "+TABDIR )
+RESDIR = os.path.join( config["BASEDIR"], config["VIRFAM"], config["PROJECTID"], "results" )
+LOGDIR = os.path.join( config["BASEDIR"], config["VIRFAM"], config["PROJECTID"], "logs" )
+TABDIR = os.path.join( config["BASEDIR"], config["VIRFAM"], config["PROJECTID"], "hittables" )
+# the results are checked in TABDIR and FASTQDIR, so they need to be present
+os.makedirs(TABDIR, exist_ok=True)
+os.makedirs( config["FASTQDIR"], exist_ok=True )
 
 # check databases
 import subprocess
