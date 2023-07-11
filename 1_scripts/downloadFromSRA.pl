@@ -16,14 +16,26 @@ my $sraid = <SID>;  chomp($sraid);
 close(SID);
 
 # download
-# when using -O, it creates additional $sraid direcory inside the output
-#   direcory, where it puts the .sra. Therefore, let's specify the output file
-#   instead (sra-tools=2.10.0):
-`prefetch $sraid -o $outdir/$sraid.sra`;
+my $sra_file = "$outdir/$sraid.sra";
+
+if (-e $sra_file) {
+    my $validate_cmd = "vdb-validate $sra_file";
+    my $validate_output = `$validate_cmd`;
+
+    if ($? == 0) {
+        print "Skipping prefetch. File validation successful.\n";
+    } else {
+        print "File validation failed. Executing prefetch...\n";
+        `prefetch $sraid -o $sra_file`;
+    }
+} else {
+    print "Executing prefetch...\n";
+    `prefetch $sraid -o $sra_file`;
+}
 
 # unpack
-`fastq-dump -O $outdir -B --split-spot --skip-technical --readids --gzip --clip $outdir/$sraid.sra`;
+`fastq-dump -O $outdir -B --split-spot --skip-technical --readids --gzip --clip $sra_file`;
 
 # clean
-`rm $outdir/$sraid.sra`;
+`rm $sra_file`;
 
