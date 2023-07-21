@@ -1,0 +1,30 @@
+SRA_download:
+  cores: 1
+  mem: "1G"
+  time: "8:00"
+  mail: ""
+
+hunter:
+  cores: 8
+  mem: "48G"
+  time: "20:00"
+  mail: ""
+
+gatherer:
+  cores: 8
+  mem: "48G"
+  time: "20:00"
+  mail: ""
+
+hunter_hittab:
+  cores: 1
+  mem: "1G"
+  time: "0:30"
+  mail: ""
+
+gatherer_hittab:
+  cores: 1
+  mem: "1G"
+  time: "0:30"
+  mail: "-N"
+
