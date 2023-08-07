@@ -39,22 +39,10 @@ USR = getpass.getuser()
 # temporary directory
 TDIR= "/tmp/"+str(USR)+"-"+str(PID)
 
-# sample IDs
+# sample IDs directly from the ACCLIST
 SAMPLES = []
-if config["ACCLIST"] == "":
-	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.fastq.gz" ) ]
-	FILES2  = [ os.path.splitext(x)[0] for x in FILES ]
-	SAMPLES = [ os.path.splitext(x)[0] for x in FILES2 ]
-else:
-	os.system( "mkdir "+TDIR )
-	os.system( "wd=`pwd`; cd "+TDIR+"; awk \'{printf \"%s\\n\", $1>$1\".txt\"}\' "+config["ACCLIST"]+"; cd $wd" )
-	IDFILES = [ os.path.basename(x)    for x in glob.glob( TDIR+"/*.txt" ) ]
-	for idf in IDFILES:
-		if not os.path.exists( config["FASTQDIR"]+"/"+idf ):
-			os.system( "cp "+TDIR+"/"+idf+" "+config["FASTQDIR"]+"/" )
-	os.system( "rm -rf "+TDIR )	
-	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.txt" ) ]
-	SAMPLES = [ os.path.splitext(x)[0] for x in FILES ]
+with open( config["ACCLIST"] ) as inf:
+	SAMPLES = [line.strip() for line in inf]
 
 # for debugging	
 #print(RESDIR)
@@ -144,15 +132,17 @@ rule gatherer_hittab:
 rule SRA_download: 
  message:
   "Downloading SRA data"
- input:
-  config["FASTQDIR"]+"/{sample}.txt"
  output:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  params:
+  input = config["FASTQDIR"]+"/{sample}.txt",
   dir1 = config["WFLOWDIR"],
   dir2 = config["FASTQDIR"]
  shell:
-  "{params.dir1}/1_scripts/downloadFromSRA.pl {input} {params.dir2}"
+  """
+  echo {wildcards.sample} > {params.input}
+  {params.dir1}/1_scripts/downloadFromSRA.pl {params.input} {params.dir2}
+  """
 
 
 # virusgatherer assembly
