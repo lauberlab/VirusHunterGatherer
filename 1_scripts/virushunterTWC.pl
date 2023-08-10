@@ -29,7 +29,6 @@ use Parallel::ForkManager;
 # --------- #
 my $hmmerE        = 10;
 my $hmmerEsure    = 0.01;
-my $maxHitN       = 10000;
 my $hitsTotalHmm  = 2;
 #my $refseqDB      = sprintf "%s/db/RefSeq/refseq_protein",        virusHGutils::get_workspace_path( "scratch" );
 #my $viralDB       = sprintf "%s/db/RefSeq/viral_genomic",         virusHGutils::get_workspace_path( "scratch" );
@@ -372,13 +371,10 @@ sub searchByHMMer {
 		# save full HMMer output
 		`mv $resdir/$sraid-hmmsearch.txt $resdir/hmmsearch.out`;
 		# save hits separately
-		my $readsavedN = 0;
 		open( HITS, ">$resdir/hmmsearch-hits.tsv" );
 		foreach ( sort {$hits{$a}{'eval'} <=> $hits{$b}{'eval'}} keys %hits ){
 			printf HITS "%s\t%s\t%s\t%s\n", $_, $hits{$_}{'qProfile'},
 			                                $hits{$_}{'score'}, $hits{$_}{'eval'};
-			$readsavedN++;
-			last if $readsavedN >= $maxHitN;
 		}
 		close(HITS);
 	}else{
@@ -424,12 +420,16 @@ sub searchRefSeq{
 	close( RHIDS);
 	my $cmd1 = "grep -F --no-group-separator -A 1 -f $rawHitsIDs $resdir/$sraid.fasta > $rawHitsFas";
 	`$cmd1`;
+	# dereplicate reads
+	my $rawHitsFasDerep = "$resdir/$sraid-HitReadsAll-dereplicated.fasta";
+	my $cmdDerep = "vsearch --derep_fulllength $rawHitsFas --notrunclabels --output $rawHitsFasDerep --quiet";
+	`$cmdDerep`;
 	# assemble reads to contigs
 	printf $LOGF "[virushunter] \t$sraid: assembling initial hits with $assembler\n";
-	my $assLog      = $rawHitsFas.".cap.log";
-	my $assContigs  = $rawHitsFas.".cap.contigs";
-	my $assSinglets = $rawHitsFas.".cap.singlets";
-	my $cmd2 = "$assembler $rawHitsFas -h $cap3overhang -o $cap3overlap > $assLog";		
+	my $assLog      = $rawHitsFasDerep.".cap.log";
+	my $assContigs  = $rawHitsFasDerep.".cap.contigs";
+	my $assSinglets = $rawHitsFasDerep.".cap.singlets";
+	my $cmd2 = "$assembler $rawHitsFasDerep -h $cap3overhang -o $cap3overlap > $assLog";		
 	`$cmd2`;
 	# read contigs and reformat
 	my %contigs  = ();

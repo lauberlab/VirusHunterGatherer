@@ -15,6 +15,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
  * newbler
  * Bowtie 2
  * snakemake
+ * vsearch >=2.15.2 <2.20.0
 
 # Blast databases
 
