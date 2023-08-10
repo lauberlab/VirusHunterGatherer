@@ -14,7 +14,7 @@ dependencies:
   - c-ares=1.19.0=h5eee18b_0
   - ca-certificates=2023.05.30=h06a4308_0
   - cap3=10.2011=h779adbc_3
-  - certifi=2021.5.30=py36h06a4308_0
+  - certifi=2020.6.20=pyhd3eb1b0_3
   - cffi=1.14.6=py36h400218f_0
   - charset-normalizer=2.0.4=pyhd3eb1b0_0
   - cryptography=35.0.0=py36hd23ed53_0
@@ -68,7 +68,7 @@ dependencies:
   - ncurses=6.4=h6a678d5_0
   - numpy=1.19.2=py36h54aff64_0
   - numpy-base=1.19.2=py36hfa32c7d_0
-  - openssl=1.1.1t=h7f8727e_0
+  - openssl=1.1.1v=h7f8727e_0
   - pandas=1.1.5=py36ha9443f7_0
   - paramiko=2.8.1=pyhd3eb1b0_0
   - pcre=8.45=h295c915_0
@@ -121,6 +121,7 @@ dependencies:
   - tbb=2020.3=hfd86e86_0
   - tk=8.6.12=h1ccaba5_0
   - urllib3=1.26.8=pyhd3eb1b0_0
+  - vsearch=2.15.2=h95f258a_1
   - wget=1.21.3=h0b77cf5_0
   - wheel=0.37.1=pyhd3eb1b0_0
   - wrapt=1.12.1=py36h7b6447c_1
