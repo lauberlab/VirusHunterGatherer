@@ -421,9 +421,13 @@ sub searchRefSeq{
 	my $cmd1 = "grep -F --no-group-separator -A 1 -f $rawHitsIDs $resdir/$sraid.fasta > $rawHitsFas";
 	`$cmd1`;
 	# dereplicate reads
+	printf $LOGF "[virushunter] \t$sraid: dereplicating initial hits with vsearch\n";
 	my $rawHitsFasDerep = "$resdir/$sraid-HitReadsAll-dereplicated.fasta";
 	my $cmdDerep = "vsearch --derep_fulllength $rawHitsFas --notrunclabels --output $rawHitsFasDerep --quiet";
 	`$cmdDerep`;
+	my $nHitsLeft = `grep -c ">" $rawHitsFasDerep`;
+    chomp($nHitsLeft);
+	printf $LOGF "[virushunter] \t$sraid: $nHitsLeft initial hits left\n";
 	# assemble reads to contigs
 	printf $LOGF "[virushunter] \t$sraid: assembling initial hits with $assembler\n";
 	my $assLog      = $rawHitsFasDerep.".cap.log";
