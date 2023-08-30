@@ -721,7 +721,8 @@ if ($mapping =~ m/yes/) {
     	$bowtie_option_q_or_f = "-f";
     }
 
-    retrieve_reads($db, "$output/final_result_dir/reads_list.txt", "$output/final_result_dir/reads_list.$ext", "MAP");
+	my $cmd1 = "grep -F --no-group-separator -A 1 -f $output/final_result_dir/reads_list.txt $db > $output/final_result_dir/reads_list.$ext";
+	`$cmd1`;
     !system "bowtie2-build $output/final_result_dir/final_positive_contigs.fasta $output/final_result_dir/final_positive_contigs.fasta 2>>$log >>$output/bowtie2-build.log"
 	or warn "WARNING: bowtie2-build failed: $!\nCommand: bowtie2-build $output/final_result_dir/final_positive_contigs.fasta $output/final_result_dir/final_positive_contigs.fasta 2>>$log >>$output/bowtie2-build.log\n";
     !system "bowtie2 $bowtie_option_q_or_f -S $output/final_result_dir/final_positive_contigs.sam --fullref -a $output/final_result_dir/final_positive_contigs.fasta $output/final_result_dir/reads_list.$ext 2>>$output/bowtie2.log" or
@@ -1392,7 +1393,8 @@ sub recruit_new_reads {
 	# retrieve new sequences 
 	#
 	print_current_time("Retrieving new reads for progressive assembly");
-	retrieve_reads($db, "$output/tabular.results", $recruited_reads_filename, ' ');
+	my $cmd1 = "grep -F --no-group-separator -A 1 -f $output/tabular.results $db > $recruited_reads_filename";
+	`$cmd1`;
     }
 
     #
@@ -2425,7 +2427,8 @@ sub trimming_and_extending {
     close FILE;
     close BLAST_RESULT;
 
-    retrieve_reads($db, $recruited_reads_list, $recruited_reads_filename, ' ');
+	my $cmd1 = "grep -F --no-group-separator -A 1 -f $recruited_reads_list $db > $recruited_reads_filename";
+	`$cmd1`;
 
     #
     # fix recruited_reads sequence IDs (remove lcl| -- or whatever 3 letters appear after > and before |)
@@ -2504,34 +2507,6 @@ sub trimming_and_extending {
     else {
 	unlink "$contig_file";
 	return(0);
-    }
-}
-
-sub retrieve_reads {
-    my $database = shift;
-    my $read_list = shift;
-    my $out_reads = shift;
-    my $task = shift;
-
-    if($db_info->{'db_type'} =~ m/fasta/i) {
-	get_indexed_recs($db_info->{'seq_cidx'}, $db_info->{'seq_cidxin'}, $read_list, $out_reads, $id_table);
-
-	if(defined $db_info->{'qual_cidx'} && $task ne 'MAP') {
-	    get_indexed_recs($db_info->{'qual_cidx'}, $db_info->{'qual_cidxin'}, $read_list, "$out_reads\.qual", $qid_table);
-	    $db_info->{'retr_qual'} = "$out_reads\.qual";
-	}
-    }
-    elsif($db_info->{'db_type'} =~ m/sff/i) {
-	unless($task eq "MAP") {
-	    system "sfffile -o $out_reads -i $read_list $database";
-	}
-	else {
-	    !system "sfffile -o $out_reads\.tmp -i $read_list $database"
-		or warn "WARNING: sfffile could not create temporary SFF (with reads from $read_list) from $database: $!\n";
-	    !system "sffinfo -s $out_reads\.tmp > $out_reads"
-		or warn "WARNING: sffinfo could not retrieve reads from temporary SFF file $out_reads\.tmp: $!\n";
-	    unlink "$out_reads\.tmp" or warn "WARNING: Could not delete temporary file $out_reads\.tmp: $!\n";
-	}
     }
 }
 
