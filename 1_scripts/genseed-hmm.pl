@@ -1091,10 +1091,24 @@ sub progressive_assembly_routine {
 	}
 
 	#
+	# dereplicate $next_round_recruited_reads
+	#
+	if ($assembler_name =~ m/cap3/i) {
+		print "There is $new_reads_in_this_round new reads. Dereplicating the reads\n";
+		print_current_time("There is $new_reads_in_this_round new reads. Dereplicating the reads");
+		my $dereplicated_reads = "$output/dereplicated_recruited_reads.$ext";
+		my $cmdDerep = "vsearch --derep_fulllength $next_round_recruited_reads --notrunclabels --output $dereplicated_reads --quiet";
+		`$cmdDerep`;
+		system "mv $dereplicated_reads $next_round_recruited_reads";
+		my $new_count = `grep -c ">" $next_round_recruited_reads`;
+		chomp($new_count);
+		$new_reads_in_this_round = $new_count + 0;
+	}
+	#
 	# now run the progressive assembly round
 	#
-	print "Running progressive assembly with: $new_reads_in_this_round new reads\n";
-	print_current_time("Running progressive assembly with: $new_reads_in_this_round new reads");
+	print "Running progressive assembly with: $new_reads_in_this_round dereplicated new reads\n";
+	print_current_time("Running progressive assembly with: $new_reads_in_this_round dereplicated new reads");
 
 	if ($assembler_name =~ m/newbler/i) {
 	    $stop_progressive_assembly = run_newbler($last_round_contig_file, 
