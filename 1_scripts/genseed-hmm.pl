@@ -7,6 +7,7 @@ use warnings;
 use strict;
 use Storable;
 use Getopt::Long;
+use Scalar::Util qw(looks_like_number);
 use Carp ();
 
 # in case of problems, uncomment the following two lines for very detailed warning/error messages
@@ -1068,7 +1069,7 @@ sub progressive_assembly_routine {
 	#
 	# fix recruited_reads sequence IDs (remove lcl| -- or whatever 3 letters appear after > and before |)
 	#
-	system("sed -i 's/>...\|/>/' $next_round_recruited_reads");
+	system("sed -i 's/>...\|/>/' $next_round_recruited_reads") if (-e $next_round_recruited_reads);
 
 	#
 	# check if there are new reads in this round and store the intermediate files if user wants
@@ -2263,7 +2264,7 @@ sub check_progress {
 		# in the progressive assembly. If we have regions with repetitions the product of the assembly process can be fragmented and the last contig seed
 		# will not be present in the former contigs. So when this happens we need to finish the progressive assembly process.
 		#
-		if (defined $round && $round == 1) {
+		if (defined $round && looks_like_number($round) && $round == 1) {
 		    print "Seed $blast_result[0] not found in reconstructed contig. Stopping progressive assembly for contig $blast_result[3].\n";
 		    print_current_time("Seed $blast_result[0] not found in reconstructed contig. Stopping progressive assembly for contig $blast_result[3].");
 		    next;
