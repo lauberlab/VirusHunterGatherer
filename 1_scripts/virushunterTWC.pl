@@ -493,20 +493,14 @@ sub searchRefSeq{
 	# run filter 2 - tblastx against viral-genomic
 	my $contigIDsFilter2  = "$resdir/contigs.singlets-filter2.txt";
 	my $contigSeqsFilter2 = "$resdir/$sraid-HitReadsAll-trimmed.fasta.cap.contigs.singlets-filter2.fas";
-	#filter2(ERR1630605.fastq.gz $contigIDsFilter1, $contigIDsFilter2, $contigSeqsFilter2, \%contigs );
-	filter3( $contigIDsFilter1, $contigIDsFilter2, $contigSeqsFilter2, \%contigs );
-	# run filter 3 - blastx against non-viral refseq_protein
-	my $contigIDsFilter3  = "$resdir/contigs.singlets-filter3.txt";
-	my $contigSeqsFilter3 = "$resdir/$sraid-HitReadsAll-trimmed.fasta.cap.contigs.singlets-filter3.fas";
-	#filter3( $contigIDsFilter2, $contigIDsFilter3, $contigSeqsFilter3, \%contigs );
-	filter2( $contigIDsFilter2, $contigIDsFilter3, $contigSeqsFilter3, \%contigs );
+	filter2( $contigIDsFilter1, $contigIDsFilter2, $contigSeqsFilter2, \%contigs );
 	# extract remaining hits to file
 	my $contigSeqsFinal   = "$resdir/contigs.singlets.fas";
 	my $contigReadsFinal  = "$resdir/contigs.singlets.reads.tsv";
 	my @idsFinal = ();
 	open( SOUT, ">$contigSeqsFinal" )  or die ( "Can't open file '$contigSeqsFinal': $!\n" );	
 	open( ROUT, ">$contigReadsFinal" ) or die ( "Can't open file '$contigReadsFinal': $!\n" );	
-	open(  IIN, "<$contigIDsFilter3" ) or die ( "Can't open file '$contigIDsFilter3': $!\n" );
+	open(  IIN, "<$contigIDsFilter2" ) or die ( "Can't open file '$contigIDsFilter2': $!\n" );
 	while ( my $line = <IIN> ){
 		chomp($line);  next if $line eq "";
 		push( @idsFinal, $line );
