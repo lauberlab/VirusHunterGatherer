@@ -23,6 +23,8 @@ You need to install the following Blast databases and specify their file paths a
  * viral_genomic
  * filter (see subfolder 4_databases)
 
+  *Note:* For detailed instructions on downloading Blast databases, please refer to our [GitHub Wiki](https://github.com/lauberlab/VirusHunterGatherer/wiki). 
+
 # Support
 
 For questions or support, email chris.lauber *at* twincore.de
