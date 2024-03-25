@@ -29,14 +29,13 @@ use Parallel::ForkManager;
 # --------- #
 my $hmmerE        = 10;
 my $hmmerEsure    = 0.01;
-my $maxHitN       = 10000;
 my $hitsTotalHmm  = 2;
 #my $refseqDB      = sprintf "%s/db/RefSeq/refseq_protein",        virusHGutils::get_workspace_path( "scratch" );
 #my $viralDB       = sprintf "%s/db/RefSeq/viral_genomic",         virusHGutils::get_workspace_path( "scratch" );
 #my $refseqNegIDs  = sprintf "%s/db/RefSeq/viral_protein.gi_list", virusHGutils::get_workspace_path( "scratch" );
 #my $filterDB      = sprintf "%s/db/RefSeq/filter",                virusHGutils::get_workspace_path( "scratch" );
 #my $filterDB      = sprintf "%s/db/Kroepfchen/Kroepfchen_050_entkarpft_reformatted_filtered", virusHGutils::get_workspace_path( "scratch" );
-my $gi2taxExec    = "1_scripts/queryTax.pl";
+my $id2taxExec    = "1_scripts/queryTax.pl";
 my $DBblastEh     = 1e-04;	# cut-off for blast against host sequences
 my $DBblastEv     = 1; # 1e-02;	# cut-off for blast against virus sequences
 my $cutQth        = 10;	# threshold for cutting low-quality bases in cutadapt
@@ -195,7 +194,7 @@ sub init {
 	$proFile = "$workflowDir/2_profiles/$family-profile.hmm";
 
 	# set paths helper executables
-	$gi2taxExec = "$workflowDir/$gi2taxExec";
+	$id2taxExec = "$workflowDir/$id2taxExec";
 
 	# open log file
 	open( $LOGF, ">$logdir/$sraid"."_virushunter.log" ) or die( "Can't write to log file: $!\n" );
@@ -372,13 +371,10 @@ sub searchByHMMer {
 		# save full HMMer output
 		`mv $resdir/$sraid-hmmsearch.txt $resdir/hmmsearch.out`;
 		# save hits separately
-		my $readsavedN = 0;
 		open( HITS, ">$resdir/hmmsearch-hits.tsv" );
 		foreach ( sort {$hits{$a}{'eval'} <=> $hits{$b}{'eval'}} keys %hits ){
 			printf HITS "%s\t%s\t%s\t%s\n", $_, $hits{$_}{'qProfile'},
 			                                $hits{$_}{'score'}, $hits{$_}{'eval'};
-			$readsavedN++;
-			last if $readsavedN >= $maxHitN;
 		}
 		close(HITS);
 	}else{
@@ -424,12 +420,20 @@ sub searchRefSeq{
 	close( RHIDS);
 	my $cmd1 = "grep -F --no-group-separator -A 1 -f $rawHitsIDs $resdir/$sraid.fasta > $rawHitsFas";
 	`$cmd1`;
+	# dereplicate reads
+	printf $LOGF "[virushunter] \t$sraid: dereplicating initial hits with vsearch\n";
+	my $rawHitsFasDerep = "$resdir/$sraid-HitReadsAll-dereplicated.fasta";
+	my $cmdDerep = "vsearch --derep_fulllength $rawHitsFas --notrunclabels --output $rawHitsFasDerep --quiet";
+	`$cmdDerep`;
+	my $nHitsLeft = `grep -c ">" $rawHitsFasDerep`;
+    chomp($nHitsLeft);
+	printf $LOGF "[virushunter] \t$sraid: $nHitsLeft initial hits left\n";
 	# assemble reads to contigs
 	printf $LOGF "[virushunter] \t$sraid: assembling initial hits with $assembler\n";
-	my $assLog      = $rawHitsFas.".cap.log";
-	my $assContigs  = $rawHitsFas.".cap.contigs";
-	my $assSinglets = $rawHitsFas.".cap.singlets";
-	my $cmd2 = "$assembler $rawHitsFas -h $cap3overhang -o $cap3overlap > $assLog";		
+	my $assLog      = $rawHitsFasDerep.".cap.log";
+	my $assContigs  = $rawHitsFasDerep.".cap.contigs";
+	my $assSinglets = $rawHitsFasDerep.".cap.singlets";
+	my $cmd2 = "$assembler $rawHitsFasDerep -h $cap3overhang -o $cap3overlap > $assLog";		
 	`$cmd2`;
 	# read contigs and reformat
 	my %contigs  = ();
@@ -443,7 +447,7 @@ sub searchRefSeq{
 			$contigs{ $contigID }->{ 'seq' }       = "";
 			$contigs{ $contigID }->{ 'reads' }     = [];
 			$contigs{ $contigID }->{ 'E_refseq' }  = 1e6;		# init here, to be able to switch filters   
-			$contigs{ $contigID }->{ 'gi_refseq' } = $contigID;	# init here, to be able to switch filters   
+			$contigs{ $contigID }->{ 'inner_contigID' } = $contigID;	# init here, to be able to switch filters   
 		}else{
 			$contigs{ $contigID }->{ 'seq' }      .= $line;
 		}
@@ -472,7 +476,7 @@ sub searchRefSeq{
 			$contigs{ $contigID }->{ 'seq' }       = "";
 			$contigs{ $contigID }->{ 'reads' }     = [];
 			$contigs{ $contigID }->{ 'E_refseq' }  = 1e6;		# init here, to be able to switch filters   
-			$contigs{ $contigID }->{ 'gi_refseq' } = $contigID;	# init here, to be able to switch filters   
+			$contigs{ $contigID }->{ 'inner_contigID' } = $contigID;	# init here, to be able to switch filters   
 			push( @{ $contigs{ $contigID }->{ 'reads' } }, $contigID );
 		}else{
 			$contigs{ $contigID }->{ 'seq' }      .= $line;
@@ -532,7 +536,7 @@ sub searchRefSeq{
 	my $contig2query = {};
 	foreach my $sid ( @idsFinal ){
 		# sort by viral refseq subject that was hit
-		my $vid = $contigs{ $sid }->{ 'gi_refseq' };
+		my $vid = $contigs{ $sid }->{ 'id_refseq' };
 		if ( ! exists $res->{ $vid } ){
 			$res->{ $vid } = {};
 			$res->{ $vid }->{ 'init_best_E' }       = 1e6;
@@ -541,7 +545,8 @@ sub searchRefSeq{
 			$res->{ $vid }->{ 'refseq_contigs' }    = 0;
 			$res->{ $vid }->{ 'refseq_best_E' }     = 1e6;
 			$res->{ $vid }->{ 'refseq_best_Ident' } = 0;
-			$res->{ $vid }->{ 'refseq_subject' }    = sprintf "gi:%d|%s", $vid, $contigs{ $sid }->{ 'id_refseq' };
+			# it will look like 'NC_006430.1|Mammalian orthorubulavirus 5'
+			$res->{ $vid }->{ 'refseq_subject' }    = sprintf "%s|%s", $vid, $contigs{ $sid }->{ 'title_refseq' };
 		}
 		# best E, query, and number of hit reads of initial search
 		$contig2query->{ $sid } = {};
@@ -568,13 +573,16 @@ sub searchRefSeq{
 	}
 	# annotate final hits with taxonomy info
 	printf $LOGF "[virushunter] \t$sraid: adding taxonomy annotation for final viral reference sequence hits\n";	
-	my $giFile = "$resdir/$sraid-FinalHits-gis.txt";
-	open( GI, ">$giFile" ) or die( "Can't open file '$giFile': $!\n" );
-	foreach my $gi ( keys %{$res} ){
-		printf GI "|%d|\n", $gi;
+	my $idFile = "$resdir/$sraid-FinalHits-ids.txt";
+	open( ID, ">$idFile" ) or die( "Can't open file '$idFile': $!\n" );
+	foreach my $vid ( keys %{$res} ) {
+		my $refseq_subject = $res->{ $vid }->{ 'refseq_subject' };
+		# refseq_subject looks like 'NC_006430.1|Mammalian orthorubulavirus 5'
+		my ($id_refseq) = $refseq_subject =~ /^([^|]+)/;
+		print ID "$id_refseq\n";
 	}
-	close(GI);
-	my $cmdTax = "$gi2taxExec $giFile";
+	close(ID);
+	my $cmdTax = "$id2taxExec $idFile";
 	open( TAX, "$cmdTax |" );
 	while ( my $line = <TAX> ){
 		chomp($line);  next if $line eq "";
@@ -664,7 +672,7 @@ sub filter2{
 		chomp($line);  next if $line eq "";  $ids{ $line } = 1;
 	}
 	close(IDSIN);
-	# gi2taxExecwrite query sequences to file
+	# id2taxExec write query sequences to file
 	open( FASOUT, ">$fasout" ) or die ( "Can't open file '$fasout': $!\n" );
 	foreach ( sort keys %ids ){
 		printf FASOUT ">%s\n%s\n", $_, $$cntgs{ $_ }->{ 'seq' };
@@ -672,7 +680,7 @@ sub filter2{
 	close(FASOUT);
 	# blast
 	my $blastfile = $fasout."-tblastx.tsv";
-	my $cmd = "tblastx -db $viralDB -query $fasout -outfmt '6 qseqid sgi stitle pident evalue length qlen sseqid' -max_hsps 1 -max_target_seqs 1 -evalue $DBblastEv -num_threads $threads > $blastfile";
+	my $cmd = "tblastx -db $viralDB -query $fasout -outfmt '6 qseqid stitle pident evalue length qlen sseqid' -max_hsps 1 -max_target_seqs 1 -evalue $DBblastEv -num_threads $threads > $blastfile";
 	`$cmd 2>/dev/null`;
 	# get hits
 	my %idsO = ();
@@ -681,12 +689,12 @@ sub filter2{
 		chomp($line);  next if $line eq "";
 		my @v = split( /\t/, $line );
 		$idsO{   $v[0] } = 1;
-		$$cntgs{ $v[0] }->{ 'E_refseq' }     = $v[4];
-		$$cntgs{ $v[0] }->{ 'ident_refseq' } = $v[3];
-		$$cntgs{ $v[0] }->{ 'id_refseq' }    = $v[2];
-		$$cntgs{ $v[0] }->{ 'id_refseq' }    = $v[7]  if $v[2] eq "N/A";		
-		$$cntgs{ $v[0] }->{ 'gi_refseq' }    = $v[1];
-		$$cntgs{ $v[0] }->{ 'lens_refseq' }  = sprintf "%d / %d", $v[5]*3, $v[6];
+		$$cntgs{ $v[0] }->{ 'E_refseq' }      = $v[3];
+		$$cntgs{ $v[0] }->{ 'ident_refseq' }  = $v[2];
+		# sseqid looks like 'ref|NC_006430.1|' - extact the actual id between pipes
+		( $$cntgs{ $v[0] }->{ 'id_refseq' } ) = $v[6] =~ /\|(.+)\|\z/;
+		$$cntgs{ $v[0] }->{ 'title_refseq' }  = $v[1];
+		$$cntgs{ $v[0] }->{ 'lens_refseq' }   = sprintf "%d / %d", $v[4]*3, $v[5];
 	}
 	close(BLAST);
 	# save hits
@@ -718,7 +726,7 @@ sub filter3{
 	# only analyze contig with best E value per refseq subject
 	my %ids2 = ();
 	foreach ( keys %{$cntgs} ){
-		my $vid = $$cntgs{ $_ }->{ 'gi_refseq' };
+		my $vid = $$cntgs{ $_ }->{ 'inner_contigID' };
 		if ( ! exists $ids2{ $vid } ){
 			$ids2{ $vid } = ();
 			$ids2{ $vid }{ 'contigID' } = $_;
@@ -748,10 +756,10 @@ sub filter3{
 		my @v = split( /\t/, $line );
 		next if $v[2] =~ /.*virus.*/i;
 		my $cid = $v[0];
-		my $vid = $$cntgs{ $cid }->{ 'gi_refseq' };
+		my $vid = $$cntgs{ $cid }->{ 'inner_contigID' };
 		# delete all contigs that hit the respective refseq subject
 		foreach ( keys %{$cntgs} ){
-			if ( $$cntgs{ $_ }->{ 'gi_refseq' } eq $vid ){
+			if ( $$cntgs{ $_ }->{ 'inner_contigID' } eq $vid ){
 				delete $ids{ $_ };
 			}
 		}

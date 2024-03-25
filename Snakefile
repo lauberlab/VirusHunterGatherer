@@ -14,13 +14,23 @@ import getpass
 configfile: "config.yaml"
 
 # directories
-RESDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/results"
-LOGDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/logs"
-TABDIR = config["BASEDIR"]+"/"+config["VIRFAM"]+"/"+config["PROJECTID"]+"/hittables"
-if not os.path.exists( config["FASTQDIR"] ):
-	os.system( "mkdir "+config["FASTQDIR"] )
-if not os.path.exists( TABDIR ):
-	os.system( "mkdir "+TABDIR )
+RESDIR = os.path.join( config["BASEDIR"], config["VIRFAM"], config["PROJECTID"], "results" )
+LOGDIR = os.path.join( config["BASEDIR"], config["VIRFAM"], config["PROJECTID"], "logs" )
+TABDIR = os.path.join( config["BASEDIR"], config["VIRFAM"], config["PROJECTID"], "hittables" )
+# the results are checked in TABDIR and FASTQDIR, so they need to be present
+os.makedirs(TABDIR, exist_ok=True)
+os.makedirs( config["FASTQDIR"], exist_ok=True )
+
+# check databases
+import subprocess
+
+for db in (config["DBFILTER"], config["DBREFSEQ"], config["DBVIRAL"]):
+	command = ['blastdbcmd', '-db', db, '-info']
+	p = subprocess.run(command, stdout=subprocess.PIPE)
+
+if not os.path.isfile( config["ACCSVIRAL"] ):
+	raise AssertionError(f'\nA file with viral protein accessions is missing or not a file. '
+                         f'Please, check the file: {config["ACCSVIRAL"]}\n')
 
 # process ID and username
 PID = os.getpid()
@@ -29,22 +39,10 @@ USR = getpass.getuser()
 # temporary directory
 TDIR= "/tmp/"+str(USR)+"-"+str(PID)
 
-# sample IDs
+# sample IDs directly from the ACCLIST
 SAMPLES = []
-if config["ACCLIST"] == "":
-	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.fastq.gz" ) ]
-	FILES2  = [ os.path.splitext(x)[0] for x in FILES ]
-	SAMPLES = [ os.path.splitext(x)[0] for x in FILES2 ]
-else:
-	os.system( "mkdir "+TDIR )
-	os.system( "wd=`pwd`; cd "+TDIR+"; awk \'{printf \"%s\\n\", $1>$1\".txt\"}\' "+config["ACCLIST"]+"; cd $wd" )
-	IDFILES = [ os.path.basename(x)    for x in glob.glob( TDIR+"/*.txt" ) ]
-	for idf in IDFILES:
-		if not os.path.exists( config["FASTQDIR"]+"/"+idf ):
-			os.system( "cp "+TDIR+"/"+idf+" "+config["FASTQDIR"]+"/" )
-	os.system( "rm -rf "+TDIR )	
-	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.txt" ) ]
-	SAMPLES = [ os.path.splitext(x)[0] for x in FILES ]
+with open( config["ACCLIST"] ) as inf:
+	SAMPLES = [line.strip() for line in inf]
 
 # for debugging	
 #print(RESDIR)
@@ -61,7 +59,9 @@ rule all:
  input:
   expand( config["FASTQDIR"]+"/{sample}.fastq.gz",                                   sample=SAMPLES ),
   expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz",                    sample=SAMPLES ),
-  expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES )
+  expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES ),
+  TABDIR+"/virushunter.tsv",
+  TABDIR+"/virusgatherer-"+config["ASSEMBLER"]+".tsv"
 
 
 # virushunter search
@@ -109,19 +109,40 @@ rule hunter_hittab:
   "{params.dir1}/1_scripts/virushunterTWC_hittable.pl {params.vfam} {params.pid} {params.dir2} {params.flag} > {output}"
 
 
+# virusgatherer hit table
+rule gatherer_hittab:
+ message:
+  "Collecting virusgatherer results"
+ input:
+  expand ( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample = SAMPLES )
+ output:
+  TABDIR+"/virusgatherer-"+config["ASSEMBLER"]+".tsv"
+ params:
+  dir1 = config["WFLOWDIR"],
+  dir2 = config["BASEDIR"],
+  vfam = config["VIRFAM"],
+  pid = config["PROJECTID"],
+  ass   = config["ASSEMBLER"],
+  flag = config["ISSRA"]
+ shell:
+  "{params.dir1}/1_scripts/virusgathererTWC_hittable.pl {params.vfam} {params.pid} {params.ass} {params.dir2} {params.flag} > {output}"
+
+
 # download data if not present
 rule SRA_download: 
  message:
   "Downloading SRA data"
- input:
-  config["FASTQDIR"]+"/{sample}.txt"
  output:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  params:
+  input = config["FASTQDIR"]+"/{sample}.txt",
   dir1 = config["WFLOWDIR"],
   dir2 = config["FASTQDIR"]
  shell:
-  "{params.dir1}/1_scripts/downloadFromSRA.pl {input} {params.dir2}"
+  """
+  echo {wildcards.sample} > {params.input}
+  {params.dir1}/1_scripts/downloadFromSRA.pl {params.input} {params.dir2}
+  """
 
 
 # virusgatherer assembly
