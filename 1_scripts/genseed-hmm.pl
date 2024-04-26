@@ -2231,11 +2231,17 @@ sub check_progress {
 			    print "Contig final_contig_$round.$blast_result[3] reconstructed with $length bp - finishing its progressive assembly (trimming did not improve reconstruction)\n";
 			    print_current_time("Contig final_contig_$round.$blast_result[3] reconstructed with $length bp - finishing its progressive assembly (trimming did not improve reconstruction))");
 
-			    print FINAL_FILE ">final_contig_$round.$blast_result[3]\n";
+				if($current_contigs eq 'last') {
+				$positive_contigs->{"r$round.$blast_result[3]"} = $seq;
+	        	}
+				else {
+			    open(FINAL_FILE, ">>$output/final_result_dir/final_contigs.fasta") or die "ERROR: Could not write to file $output/final_result_dir/final_contigs.fasta (2238): $!\n";
+			    print FINAL_FILE ">r$round.$blast_result[3]\n";
 			    print FINAL_FILE $seq, "\n";
 			    close FINAL_FILE;
 
-			    delete $current_contigs->{$blast_result[0]} unless $current_contigs eq 'last';
+			    delete $current_contigs->{$blast_result[0]};
+        		}
 			}
 		    }
 		}
