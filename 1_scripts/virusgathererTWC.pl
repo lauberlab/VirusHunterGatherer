@@ -20,7 +20,7 @@ use POSIX;
 # --------- #
 # parameter
 # --------- #
-my $GenSeedExec   = "genseed-hmm";
+my $GenSeedExec   = "1_scripts/genseed-hmm.pl";
 my $GS_seed_size  = 30;
 my $GS_blast_E    = 0.001;
 my $GS_blast_ide  = 85;
@@ -276,8 +276,14 @@ sub preprocess{
 	my $read2id = `zcat $fastqF | head -n 5 | tail -n 1`;
 	chomp($read1id);
 	chomp($read2id);
-	$read1id =~ /(.*\.\d+)\.\d .*/;  my $r1id = $1;
-	$read2id =~ /(.*\.\d+)\.\d .*/;  my $r2id = $1;
+	my $r1id = "1";
+	my $r2id = "2";
+	if( $read1id =~ /(.*\.\d+)\.\d .*/ ){
+			$r1id = $1;
+	}
+	if( $read2id =~ /(.*\.\d+)\.\d .*/ ){
+			$r2id = $1;
+	}
 	my $fastp_w   = $threads;
 	   $fastp_w   = 16  if $threads > 16;
 	my $fastp_cmd = "fastp -i $fastqF -w $fastp_w -j $resdir/$sraid.fastp.json -h $resdir/$sraid.fastp.html";

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-
+ 
 #########################################################
 # search for viral sequences in NGS data
 # workflow optimzed for usage on a computing server
@@ -7,17 +7,15 @@
 # author: Chris Lauber
 #  email: chris.lauber@twincore.de
 #########################################################
-
+ 
 # ------------ #
 # load modules
 # ------------ #
-#use lib "/home/lauber/lib/perl/";
+# use lib "/mnt/twincore/compvironas/software/vhvg/VirusHunterGatherer/lib/perl"; # please make sure to adjust the path
 use warnings;
 use strict;
-use LWP::Simple qw/get/;
 use POSIX qw/floor/;
 use Cwd;
-#use Data::Dumper;
 use Parallel::ForkManager;
 
 #use lib "/home/lauber/lauber-2015-virusHunter";
@@ -254,8 +252,16 @@ sub preprocess {
 	my $read2id = `zcat $fastqF | head -n 5 | tail -n 1`;
 	chomp($read1id);
 	chomp($read2id);
-	$read1id =~ /(.*\.\d+)\.\d .*/;  my $r1id = $1;
-	$read2id =~ /(.*\.\d+)\.\d .*/;  my $r2id = $1;
+	#$read1id =~ /(.*\.\d+)\.\d .*/;  my $r1id = $1;
+	#$read2id =~ /(.*\.\d+)\.\d .*/;  my $r2id = $1;
+	my $r1id = "1";
+	my $r2id = "2";
+	if( $read1id =~ /(.*\.\d+)\.\d .*/ ){
+		$r1id = $1;
+	}
+	if( $read2id =~ /(.*\.\d+)\.\d .*/ ){
+		$r2id = $1;
+	}
 	my $fastp_w   = $threads;
 	   $fastp_w   = 16  if $threads > 16;
 	my $fastp_cmd = "fastp -i $fastqF -w $fastp_w -j $resdir/$sraid.fastp.json -h $resdir/$sraid.fastp.html";
