@@ -48,14 +48,6 @@ if config["ACCLIST"] == "":
 else:
     with open(config["ACCLIST"]) as inf:
         SAMPLES = [line.strip() for line in inf]
-    # Create text files for each sample in SAMPLES
-    for sample in SAMPLES:
-        # Create the filename for the text file
-        filename = os.path.join(config["FASTQDIR"], f"{sample}.txt")
-                               
-        # Write the corresponding sample  to the text file
-        with open(filename, "w") as outfile:
-            outfile.write(sample)
 
 # for debugging	
 #print(RESDIR)
@@ -145,15 +137,17 @@ rule gatherer_hittab:
 rule SRA_download: 
  message:
   "Downloading SRA data"
- input:
-  config["FASTQDIR"]+"/{sample}.txt"
  output:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  params:
+  input = config["FASTQDIR"]+"/{sample}.txt",
   dir1 = config["WFLOWDIR"],
   dir2 = config["FASTQDIR"]
  shell:
-  "{params.dir1}/1_scripts/downloadFromSRA.pl {input} {params.dir2}"
+  """
+  echo {wildcards.sample} > {params.input}
+  {params.dir1}/1_scripts/downloadFromSRA.pl {params.input} {params.dir2}"
+  """
 
 
 # virusgatherer assembly
