@@ -146,7 +146,7 @@ rule SRA_download:
  shell:
   """
   echo {wildcards.sample} > {params.input}
-  {params.dir1}/1_scripts/downloadFromSRA.pl {params.input} {params.dir2}"
+  {params.dir1}/1_scripts/downloadFromSRA.pl {params.input} {params.dir2}
   """
 
 
