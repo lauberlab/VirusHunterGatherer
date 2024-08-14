@@ -693,6 +693,10 @@ sub filter2{
 		$$cntgs{ $v[0] }->{ 'ident_refseq' }  = $v[2];
 		# sseqid looks like 'ref|NC_006430.1|' - extact the actual id between pipes
 		( $$cntgs{ $v[0] }->{ 'id_refseq' } ) = $v[6] =~ /\|(.+)\|\z/;
+        # if empty, let's save the whole $v[6]
+		# Why? It could be just sequence id, not surrounded by pipes (this is the case, when
+		# additional genomes are included manually into the RefSeq viral_genomes database).
+		$$cntgs{ $v[0] }->{ 'id_refseq' } ||= $v[6];
 		$$cntgs{ $v[0] }->{ 'title_refseq' }  = $v[1];
 		$$cntgs{ $v[0] }->{ 'lens_refseq' }   = sprintf "%d / %d", $v[4]*3, $v[5];
 	}
