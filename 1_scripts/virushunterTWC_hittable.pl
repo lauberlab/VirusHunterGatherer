@@ -22,7 +22,7 @@ my $project  = shift;
 my $basedir  = shift;
 my $isSRA    = shift;
 my $Scut     = 1.0e-4;
-my $RmPhage  = 0;
+my $RmPhage  = 1;
 my $resdir   = "$basedir/$family/$project/results";
 my $showDate = 1;
 
