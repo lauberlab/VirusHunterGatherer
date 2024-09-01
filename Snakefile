@@ -41,8 +41,21 @@ TDIR= "/tmp/"+str(USR)+"-"+str(PID)
 
 # sample IDs directly from the ACCLIST
 SAMPLES = []
-with open( config["ACCLIST"] ) as inf:
-	SAMPLES = [line.strip() for line in inf]
+if config["ACCLIST"] == "":
+	FILES   = [ os.path.basename(x)    for x in glob.glob( config["FASTQDIR"]+"/*.fastq.gz" ) ]
+	FILES2  = [ os.path.splitext(x)[0] for x in FILES ]
+	SAMPLES = [ os.path.splitext(x)[0] for x in FILES2 ]
+else:
+    with open(config["ACCLIST"]) as inf:
+        SAMPLES = [line.strip() for line in inf]
+    # Create text files for each sample in SAMPLES
+    for sample in SAMPLES:
+        # Create the filename for the text file
+        filename = os.path.join(config["FASTQDIR"], f"{sample}.txt")
+                               
+        # Write the corresponding sample  to the text file
+        with open(filename, "w") as outfile:
+            outfile.write(sample)
 
 # for debugging	
 #print(RESDIR)
@@ -86,9 +99,10 @@ rule hunter:
   db3   = config["DBVIRAL"],
   db4   = config["ACCSVIRAL"],
   flag1 = config["MAPHG38"],
-  flag2 = config["DEBUGMODE"]
+  flag2 = config["DEBUGMODE"],
+  enable_filter_3 = config["ENABLE_FILTER_3"]
  shell:
-  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2} 2> {log.err}"
+  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2} {params.enable_filter_3} 2> {log.err}"
 
 
 # virushunter hit table
@@ -132,17 +146,15 @@ rule gatherer_hittab:
 rule SRA_download: 
  message:
   "Downloading SRA data"
+ input:
+  config["FASTQDIR"]+"/{sample}.txt"
  output:
   config["FASTQDIR"]+"/{sample}.fastq.gz"
  params:
-  input = config["FASTQDIR"]+"/{sample}.txt",
   dir1 = config["WFLOWDIR"],
   dir2 = config["FASTQDIR"]
  shell:
-  """
-  echo {wildcards.sample} > {params.input}
-  {params.dir1}/1_scripts/downloadFromSRA.pl {params.input} {params.dir2}
-  """
+  "{params.dir1}/1_scripts/downloadFromSRA.pl {input} {params.dir2}"
 
 
 # virusgatherer assembly
@@ -169,6 +181,3 @@ rule gatherer:
   flag1 = config["DEBUGMODE"]
  shell:
   "{params.dir1}/1_scripts/virusgathererTWC.pl {params.vfam} {input.fastq} {params.pid} {params.sid} {input.seed} {params.dir2} {params.cpus} {params.ass} {params.db1} {params.db2} {params.dir1} {params.flag1} 2> {log.err}"
-
-
-

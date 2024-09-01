@@ -85,6 +85,16 @@ foreach my $dir ( @hitdirs ){
 			}else{
 				printf "%s\t%s\t%s\t%s\t%s\t%s", $sraid, $srasam, $srastu, $taxon, $taxid, $blaststats;
 			}
+			# # print for this hit
+			# if ( !$isSRA ){
+			# 	printf "%s\t%s",                 $sraid,                                   $blaststats;
+			# }else{
+			# 	if (defined $srasam && defined $srastu && defined $taxon && defined $taxid) {
+			# 		printf "%s\t%s\t%s\t%s\t%s\t%s", $sraid, $srasam, $srastu, $taxon, $taxid, $blaststats;
+			# 	} else {
+			# 		print "One or more variables are undefined\n";
+			# 	}
+			# }			
 			# add taxonomy info
 			$txval = getTaxForSeqId( $accid, "protein" );
 			printf "\t%s", $txval;
@@ -93,7 +103,6 @@ foreach my $dir ( @hitdirs ){
 		}
 	}
 }
-
 
 # function to get taxonomy for a nucleotide/protein accession/gi via eutils
 sub getTaxForSeqId{

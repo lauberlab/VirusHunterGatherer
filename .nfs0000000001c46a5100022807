@@ -5,19 +5,20 @@
 #####################################################
 #
 # workflow base directory
+# WFLOWDIR:  "/home/chong/vhvg/testing"
 WFLOWDIR:  "/mnt/twincore/compvironas/software/vhvg/vh_ser_test"
 #
 # list with SRA accessions (empty string to use user-specified data)
-ACCLIST:   "/home/lauber/workflows/01_VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
+ACCLIST: "/mnt/twincore/compvironas/user/serjey/list/mammals_sra/NidoAstro_RdRp.txt"  
 #
 # directory with fastq files
-FASTQDIR:  "/data/tests/SRA_n3_test"
-#
+FASTQDIR:  "/mnt/twincore/compvironas/user/serjey/data/mammals/NidoAstro_RdRp"
+#i
 # group of viruses to search for (RNAviruses, smallDNAviruses, largeDNAviruses)
 VIRFAM:    "RNAviruses"
 #
 # name of project folder
-PROJECTID: "test_SRA_n3"
+PROJECTID: "NidoAstro_RdRp_15august_RNAvirus_nofil_1"
 #
 # number of threads to use for analysis of individual datasets
 THREADS:   6
@@ -31,6 +32,7 @@ ISSRA:     1
 # flag to enbable mapping against human genome; only recommended when analysing human samples
 MAPHG38:   0
 #
+
 #####################################################
 #                                                   #
 # parameters usually adjusted by the user only once #
@@ -38,23 +40,24 @@ MAPHG38:   0
 #####################################################
 #
 # base directoy where results are saved
-BASEDIR:   "/data/virushunter"
+BASEDIR:   "/mnt/twincore/compvironas/user/serjey/output"
 #
 # blast database used for 1st filtering step against contaminant sequences
-DBFILTER:  "/data/db/RefSeq/filter/filter"
+# DBFILTER:  "/mnt/twincore/compvironas/software/vhvg/VirusHunterGatherer/4_databases"
+DBFILTER:  "/mnt/twincore/compvironas/db/RefSeq/filter/filter"
 #
 # blast database used for 2nd filtering step against non-viral RefSeq
 DBREFSEQ:  "/mnt/twincore/compvironas/db/RefSeq/refseq_protein_2024/refseq_protein"
 #
 # blast database used for 3rd filtering step against viral RefSeq
-DBVIRAL:   "/mnt/twincore/compvironas/db/RefSeq/viral_genomic_2024/viral_genomic_largeDNAviruses"
+DBVIRAL:   "/mnt/twincore/compvironas/db/RefSeq/viral_genomic_2024/viral_genomic_RNAviruses"
 #
 # list of viral accessions in RefSeq
 ACCSVIRAL: "/mnt/twincore/compvironas/db/RefSeq/viral_protein_2024/viral_protein.acc_list"
 #
 # flag to enbable debugging mode
-DEBUGMODE: 0
+DEBUGMODE: 1
 #
-#
-# flag to enable or disable filter against host sequences -> 1 with and 0 without filter 3
+# flag to enable or disable filter 3-> 1 with and 0 without filter 3
 ENABLE_FILTER_3: 0
+
