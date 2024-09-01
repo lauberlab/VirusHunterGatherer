@@ -1,5 +1,0 @@
-#!/bin/sh
-
-#conda activate vhvg_v2
-snakemake -p -j 3 --configfile chris_test02_config.yaml > chris_test02_run.log 2>&1
-
