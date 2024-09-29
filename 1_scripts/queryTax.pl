@@ -24,6 +24,17 @@ foreach my $id ( @ids ){
 	my $taxa    = "";
 	open( ESEARCH, "$esearch |" );
 	while ( my $line = <ESEARCH> ){
+		if ( $line =~ /<INSDSeq_accession-version>(.*)<\/INSDSeq_accession-version>/ ){
+			my $returnid = $1;
+
+			# Sanity check: Compare $returnid to $id
+			# Why? Sometimes it returns not matching entry. Try "KNDV-Lp-2", for example
+			# (should return empty result, but Bos taurus' sequence is returned O_o)
+			if ( $returnid ne $id ){
+				print STDERR "Error: Retrieved ID '$returnid' does not match the expected ID '$id'.\n";
+				last;    # exit the loop
+			}
+		}
 		if ( $line =~ /<INSDSeq_taxonomy>(.*)<\/INSDSeq_taxonomy>/ ){
 			my $tmp = $1;
 			   $tmp =~ s/Viruses; //;

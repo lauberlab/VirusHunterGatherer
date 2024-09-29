@@ -57,6 +57,7 @@ else:
         with open(filename, "w") as outfile:
             outfile.write(sample)
 
+
 # for debugging	
 #print(RESDIR)
 #print( ",".join(SAMPLES) )
