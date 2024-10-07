@@ -56,5 +56,5 @@ ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
 DEBUGMODE: 0
 #
 #
-# flag to enable or disable filter against host sequences -> 1 with and 0 without filter 3
+# flag to enable or disable filter against non-viral RefSeq protein database
 ENABLE_FILTER_3: 0
