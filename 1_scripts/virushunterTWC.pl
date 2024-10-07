@@ -11,7 +11,7 @@
 # ------------ #
 # load modules
 # ------------ #
-use lib "/mnt/twincore/compvironas/software/vhvg/VirusHunterGatherer/lib/perl"; # please make sure to adjust the path
+#use lib "/mnt/twincore/compvironas/software/vhvg/VirusHunterGatherer/lib/perl"; # please make sure to adjust the path
 use warnings;
 use strict;
 # use LWP::Simple qw/get/;
