@@ -55,4 +55,6 @@ ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
 # flag to enbable debugging mode
 DEBUGMODE: 0
 #
-
+#
+# flag to enable or disable filter against non-viral RefSeq protein database
+ENABLE_FILTER_3: 0

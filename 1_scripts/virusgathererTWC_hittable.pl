@@ -94,7 +94,6 @@ foreach my $dir ( @hitdirs ){
 	}
 }
 
-
 # function to get taxonomy for a nucleotide/protein accession/gi via eutils
 sub getTaxForSeqId{
 	# input

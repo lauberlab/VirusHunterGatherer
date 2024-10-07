@@ -49,6 +49,7 @@ else:
     with open(config["ACCLIST"]) as inf:
         SAMPLES = [line.strip() for line in inf]
 
+
 # for debugging	
 #print(RESDIR)
 #print( ",".join(SAMPLES) )
@@ -91,9 +92,10 @@ rule hunter:
   db3   = config["DBVIRAL"],
   db4   = config["ACCSVIRAL"],
   flag1 = config["MAPHG38"],
-  flag2 = config["DEBUGMODE"]
+  flag2 = config["DEBUGMODE"],
+  enable_filter_3 = config["ENABLE_FILTER_3"]
  shell:
-  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2} 2> {log.err}"
+  "{params.dir1}/1_scripts/virushunterTWC.pl {params.vfam} {input} {params.pid} {params.sid} {params.dir2} {params.cpus} {params.db1} {params.db2} {params.db3} {params.db4} {params.dir1} {params.flag1} {params.flag2} {params.enable_filter_3} 2> {log.err}"
 
 
 # virushunter hit table

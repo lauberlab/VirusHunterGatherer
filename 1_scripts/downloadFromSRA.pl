@@ -25,12 +25,12 @@ if (-e $sra_file) {
     if ($? == 0) {
         print "Skipping prefetch. File validation successful.\n";
     } else {
-        print "File validation failed. Executing prefetch...\n";
-        `prefetch $sraid -o $sra_file`;
+        print "Executing prefetch...\n";
+        `prefetch $sraid --max-size 100000000G  -o $sra_file`;
     }
 } else {
     print "Executing prefetch...\n";
-    `prefetch $sraid -o $sra_file`;
+    `prefetch $sraid --max-size 100000000G  -o $sra_file`;
 }
 
 # unpack

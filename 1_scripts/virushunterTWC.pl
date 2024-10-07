@@ -11,9 +11,10 @@
 # ------------ #
 # load modules
 # ------------ #
-# use lib "/mnt/twincore/compvironas/software/vhvg/VirusHunterGatherer/lib/perl"; # please make sure to adjust the path
+#use lib "/mnt/twincore/compvironas/software/vhvg/VirusHunterGatherer/lib/perl"; # please make sure to adjust the path
 use warnings;
 use strict;
+# use LWP::Simple qw/get/;
 use POSIX qw/floor/;
 use Cwd;
 use Parallel::ForkManager;
@@ -57,7 +58,7 @@ my $LOGF;
 # --------------- #
 # usage and input
 # --------------- #
-if ( $#ARGV != 12 ){
+if ( $#ARGV != 13 ){
 die("
 usage: virushunterTWC.pl <parameter>\n
 parameters:
@@ -74,6 +75,7 @@ parameters:
 \t<workflow_dir>
 \t<filterHg38> [0|1]
 \t<debugMode>  [0|1]
+\t<enable_filter_3> [0|1]
 \n");
 }
 
@@ -99,6 +101,7 @@ my $refseqNegIDs = shift;
 my $workflowDir  = shift;
 my $filterHg38   = shift;
 my $debugMode    = shift;
+my $enable_filter_3 = shift;
 
 
 # -------------- #
@@ -500,23 +503,38 @@ sub searchRefSeq{
 	my $contigIDsFilter1  = "$resdir/contigs.singlets-filter1.txt";
 	my $contigSeqsFilter1 = "$resdir/$sraid-HitReadsAll-trimmed.fasta.cap.contigs.singlets-filter1.fas";
 	filter1( $contigIDsRaw,     $contigIDsFilter1, $contigSeqsFilter1, \%contigs );
-	# run filter 2 - tblastx against viral-genomic
-	my $contigIDsFilter2  = "$resdir/contigs.singlets-filter2.txt";
-	my $contigSeqsFilter2 = "$resdir/$sraid-HitReadsAll-trimmed.fasta.cap.contigs.singlets-filter2.fas";
-	#filter2(ERR1630605.fastq.gz $contigIDsFilter1, $contigIDsFilter2, $contigSeqsFilter2, \%contigs );
-	filter3( $contigIDsFilter1, $contigIDsFilter2, $contigSeqsFilter2, \%contigs );
-	# run filter 3 - blastx against non-viral refseq_protein
+
 	my $contigIDsFilter3  = "$resdir/contigs.singlets-filter3.txt";
 	my $contigSeqsFilter3 = "$resdir/$sraid-HitReadsAll-trimmed.fasta.cap.contigs.singlets-filter3.fas";
-	#filter3( $contigIDsFilter2, $contigIDsFilter3, $contigSeqsFilter3, \%contigs );
-	filter2( $contigIDsFilter2, $contigIDsFilter3, $contigSeqsFilter3, \%contigs );
+
+
+	my $contigIDsFilter2  = "$resdir/contigs.singlets-filter2.txt";
+	my $contigSeqsFilter2 = "$resdir/$sraid-HitReadsAll-trimmed.fasta.cap.contigs.singlets-filter2.fas";
+
+	if ($enable_filter_3) {
+    		# If filter 3 is enabled, run filter 3 next
+		# run filter 3 - blastx against non-viral refseq_protein
+		# sergej: added to skip filter
+		printf $LOGF "[virushunter]   Filter 3 is enabled.\n";
+	
+    		filter3( $contigIDsFilter1, $contigIDsFilter3, $contigSeqsFilter3, \%contigs );
+
+    		# Then run filter 2 using the output of filter 3
+		# run filter 2 - tblastx against viral-genomic
+    		filter2( $contigIDsFilter3, $contigIDsFilter2, $contigSeqsFilter2, \%contigs );
+	} else {
+    		# If filter 3 is not enabled, skip it and run filter 2 using the output of filter 1
+		# run filter 2 - tblastx against viral-genomic
+		printf $LOGF "[virushunter]   Filter 3 is not enabled.\n";
+    		filter2( $contigIDsFilter1, $contigIDsFilter2, $contigSeqsFilter2, \%contigs );
+	}
 	# extract remaining hits to file
 	my $contigSeqsFinal   = "$resdir/contigs.singlets.fas";
 	my $contigReadsFinal  = "$resdir/contigs.singlets.reads.tsv";
 	my @idsFinal = ();
 	open( SOUT, ">$contigSeqsFinal" )  or die ( "Can't open file '$contigSeqsFinal': $!\n" );	
 	open( ROUT, ">$contigReadsFinal" ) or die ( "Can't open file '$contigReadsFinal': $!\n" );	
-	open(  IIN, "<$contigIDsFilter3" ) or die ( "Can't open file '$contigIDsFilter3': $!\n" );
+	open(  IIN, "<$contigIDsFilter2" ) or die ( "Can't open file '$contigIDsFilter2': $!\n" );
 	while ( my $line = <IIN> ){
 		chomp($line);  next if $line eq "";
 		push( @idsFinal, $line );
@@ -542,7 +560,7 @@ sub searchRefSeq{
 	my $contig2query = {};
 	foreach my $sid ( @idsFinal ){
 		# sort by viral refseq subject that was hit
-		my $vid = $contigs{ $sid }->{ 'id_refseq' };
+		my $vid = $contigs{ $sid }->{ 'id_refseq' } // ""; # sergej: added // incase where no info can be fetched
 		if ( ! exists $res->{ $vid } ){
 			$res->{ $vid } = {};
 			$res->{ $vid }->{ 'init_best_E' }       = 1e6;
@@ -552,7 +570,7 @@ sub searchRefSeq{
 			$res->{ $vid }->{ 'refseq_best_E' }     = 1e6;
 			$res->{ $vid }->{ 'refseq_best_Ident' } = 0;
 			# it will look like 'NC_006430.1|Mammalian orthorubulavirus 5'
-			$res->{ $vid }->{ 'refseq_subject' }    = sprintf "%s|%s", $vid, $contigs{ $sid }->{ 'title_refseq' };
+			$res->{ $vid }->{ 'refseq_subject' }    = sprintf "%s|%s", $vid, $contigs{ $sid }->{ 'title_refseq' }// ""; # sergej: added // for cases where information cannot be fetched to prevent warnings.
 		}
 		# best E, query, and number of hit reads of initial search
 		$contig2query->{ $sid } = {};
@@ -585,6 +603,7 @@ sub searchRefSeq{
 		my $refseq_subject = $res->{ $vid }->{ 'refseq_subject' };
 		# refseq_subject looks like 'NC_006430.1|Mammalian orthorubulavirus 5'
 		my ($id_refseq) = $refseq_subject =~ /^([^|]+)/;
+		$id_refseq //= ''; # sergej: added to supress warning for when undefined
 		print ID "$id_refseq\n";
 	}
 	close(ID);
@@ -757,8 +776,9 @@ sub filter3{
 	my $blastfile = $fasout."-blastx.tsv";
 	my $cmd  = "blastx -db $refseqDB -query $fasout -outfmt '6 qseqid sacc stitle pident evalue' -max_hsps 1 -max_target_seqs 1 -evalue $DBblastEh -num_threads $threads ";
 	  #$cmd .= "-negative_gilist $refseqNegGIs > $blastfile";
-	   $cmd .= "-negative_seqidlist $refseqNegIDs > $blastfile";
+	   $cmd .= "-negative_seqidlist $refseqNegIDs > $blastfile.0";
 	`$cmd 2>/dev/null`;
+	`grep -v 'hypothetical protein' $blastfile.0 > $blastfile`;
 	# get hits
 	open( BLAST, "<$blastfile" ) or die( "Can't open file '$blastfile': $!\n" );
 	while ( my $line = <BLAST> ){
