@@ -5,7 +5,7 @@
 #####################################################
 #
 # workflow base directory
-WFLOWDIR:  "/mnt/twincore/compvironas/software/vhvg/vh_ser_test"
+WFLOWDIR:  "/home/lauber/workflows/01_VirusHunterGatherer"
 #
 # list with SRA accessions (empty string to use user-specified data)
 ACCLIST:   "/home/lauber/workflows/01_VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
@@ -44,13 +44,13 @@ BASEDIR:   "/data/virushunter"
 DBFILTER:  "/data/db/RefSeq/filter/filter"
 #
 # blast database used for 2nd filtering step against non-viral RefSeq
-DBREFSEQ:  "/mnt/twincore/compvironas/db/RefSeq/refseq_protein_2024/refseq_protein"
+DBREFSEQ:  "/data/db/RefSeq/refseq_protein/refseq_protein"
 #
 # blast database used for 3rd filtering step against viral RefSeq
-DBVIRAL:   "/mnt/twincore/compvironas/db/RefSeq/viral_genomic_2024/viral_genomic_largeDNAviruses"
+DBVIRAL:   "/data/db/RefSeq/viral_genomic/viral_genomic"
 #
 # list of viral accessions in RefSeq
-ACCSVIRAL: "/mnt/twincore/compvironas/db/RefSeq/viral_protein_2024/viral_protein.acc_list"
+ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
 #
 # flag to enbable debugging mode
 DEBUGMODE: 0
