@@ -28,7 +28,7 @@ ASSEMBLER: "cap3"
 # flag to specify whether or not SRA data is to be analyzed
 ISSRA:     1
 #
-# flag to enbable mapping against human genome; only recommended when analysing human samples
+# flag to enable mapping against human genome; only recommended when analysing human samples
 MAPHG38:   0
 #
 #####################################################
@@ -37,7 +37,7 @@ MAPHG38:   0
 #                                                   #
 #####################################################
 #
-# base directoy where results are saved
+# base directory where results are saved
 BASEDIR:   "/data/virushunter"
 #
 # blast database used for 1st filtering step against contaminant sequences
@@ -52,7 +52,7 @@ DBVIRAL:   "/data/db/RefSeq/viral_genomic/viral_genomic"
 # list of viral accessions in RefSeq
 ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
 #
-# flag to enbable debugging mode
+# flag to enable debugging mode
 DEBUGMODE: 0
 #
 #
