@@ -268,7 +268,8 @@ if ( $TNT == 0 ){
 	for ( my $i=0; $i<=$#readFs; $i++ ){
 		my $fqfile = $readFs[ $i ];  $fqfile =~ s/\.fastq/\.trim\.q$readQcut\.fastq/;
 		my $fafile = $fqfile;        $fafile =~ s/\.fastq$/\.fasta/;
-		my $cmd = sprintf "seqtk seq -a %s > %s", $fqfile, $fafile;
+		# my $cmd = sprintf "seqtk seq -a %s > %s", $fqfile, $fafile;
+		my $cmd = sprintf "seqkit fq2fa %s > %s", $fqfile, $fafile;
 		`$cmd`;
 	}
 }

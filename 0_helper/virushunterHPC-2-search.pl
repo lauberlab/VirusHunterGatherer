@@ -341,7 +341,8 @@ sub preprocess {
 			$fastp_cmd .= " -o $tmpdir/$sraid.trim.fastq";
 		}
 		`$fastp_cmd`;
-		`seqtk seq -A $tmpdir/$sraid.trim.fastq > $tmpdir/$sraid.fasta`;
+		# `seqtk seq -A $tmpdir/$sraid.trim.fastq > $tmpdir/$sraid.fasta`;
+		`seqkit fq2fa $tmpdir/$sraid.trim.fastq > $tmpdir/$sraid.fasta`;
 		`rm $tmpdir/$sraid.fastq.gz`;
 		`rm $tmpdir/$sraid.trim.fastq`;
 		#exit;
@@ -1105,7 +1106,8 @@ sub trimReads{
 	`autoadapt --threads=$threads --quality-cutoff=$cutQth $fastqFile1 $fastqFile2 > $autoadaptLog`;
 	chdir( $wdir );
 	# convert fastq to fasta
-	`seqtk seq -a $fastqFile2 > $outfile`;
+	# `seqtk seq -a $fastqFile2 > $outfile`;
+	`seqkit fq2fa $fastqFile2 > $outfile`;
 } # end trimReads
 
 # extract top read hit(s) and search against RefSeq proteins

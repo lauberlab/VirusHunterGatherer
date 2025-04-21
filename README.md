@@ -5,7 +5,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 # Software dependencies
 
  * EMBOSS
- * seqtk
+ * seqkit
  * fastp
  * NCBI blast
  * NCBI SRA toolkit

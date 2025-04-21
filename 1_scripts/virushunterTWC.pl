@@ -274,7 +274,8 @@ sub preprocess {
 		$fastp_cmd .= " -o $resdir/$sraid.trim.fastq";
 	}
 	`$fastp_cmd 2>/dev/null`;
-	`seqtk seq -A $resdir/$sraid.trim.fastq > $resdir/$sraid.fasta 2>/dev/null`;
+	# `seqtk seq -A $resdir/$sraid.trim.fastq > $resdir/$sraid.fasta 2>/dev/null`;
+	`seqkit fq2fa $resdir/$sraid.trim.fastq > $resdir/$sraid.fasta 2>/dev/null`;
 	`rm $resdir/$sraid.trim.fastq`;
 	#exit;
 	
