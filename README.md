@@ -42,12 +42,12 @@ For questions or support, email chris.lauber *at* twincore.de
 
 Neuman BW, Smart A, Gilmer O, Smyth RP, Vaas J, Böker N, Samborskiy DV, Bartenschlager R, Seitz S, Gorbalenya AE, Caliskan N, Lauber C. Giant RNA genomes: Roles of host, translation elongation, genome architecture, and proteome in nidoviruses. Proc Natl Acad Sci U S A. 2025 Feb 18;122(7):e2413675122. [doi: 10.1073/pnas.2413675122](https://www.pnas.org/doi/10.1073/pnas.2413675122)
  
- * (**GenBank TPA accessions**: BK070317-BK070395)
+ * **GenBank TPA accessions**: BK070317-BK070395
  * More data and information about the paper can be found [here](https://github.com/lauberlab/invertebrate_nidovirus_discovery_paper).
 
 Lauber C, Zhang X, Vaas J, Klingler F, Mutz P, Dubin A, Pietschmann T, Roth O, Neuman BW, Gorbalenya AE, Bartenschlager R, Seitz S. Deep mining of the Sequence Read Archive reveals major genetic innovations in coronaviruses and other nidoviruses of aquatic vertebrates. PLoS Pathog. 2024 Apr 22;20(4):e1012163. [doi: 10.1371/journal.ppat.1012163](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1012163)
 
- * (**GenBank TPA accessions**: BK070274-BK070316)
+ * **GenBank TPA accessions**: BK070274-BK070316
 
 Lauber C, Chong LC. Viroid-like RNA-dependent RNA polymerase-encoding ambiviruses are abundant in complex fungi. *Frontiers Microbiology*. 2023 May 12; Volume 14. [https://doi.org/10.3389/fmicb.2023.1144003](https://doi.org/10.3389/fmicb.2023.1144003)
 
