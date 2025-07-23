@@ -55,6 +55,8 @@ ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
 # flag to enable debugging mode
 DEBUGMODE: 0
 #
-#
 # flag to enable or disable filter against non-viral RefSeq protein database
 ENABLE_FILTER_3: 0
+#
+# flag to run only VirusHunter. If set to 0, the pipeline runs both vh and vg.
+ONLYHUNTER: 1
