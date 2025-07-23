@@ -58,17 +58,28 @@ else:
 
 # start calculating
 
-# run everything
-rule all:
- message:
-  "Running everything"
- input:
-  expand( config["FASTQDIR"]+"/{sample}.fastq.gz",                                   sample=SAMPLES ),
-  expand( RESDIR+"/{sample}/virushunter/contigs.singlets.fas.gz",                    sample=SAMPLES ),
-  expand( RESDIR+"/{sample}/virusgatherer/genseedhmm-"+config["ASSEMBLER"]+".fasta", sample=SAMPLES ),
-  TABDIR+"/virushunter.tsv",
-  TABDIR+"/virusgatherer-"+config["ASSEMBLER"]+".tsv"
+# Define inputs for rule all based on ONLYHUNTER flag
+if config["ONLYHUNTER"] == 1:
+    all_inputs = (
+        expand(config["FASTQDIR"] + "/{sample}.fastq.gz", sample=SAMPLES),
+        expand(RESDIR + "/{sample}/virushunter/contigs.singlets.fas.gz", sample=SAMPLES),
+        TABDIR + "/virushunter.tsv"
+    )
+    
+else:
+    all_inputs = (
+        expand(config["FASTQDIR"] + "/{sample}.fastq.gz", sample=SAMPLES),
+        expand(RESDIR + "/{sample}/virushunter/contigs.singlets.fas.gz", sample=SAMPLES),
+        expand(RESDIR + "/{sample}/virusgatherer/genseedhmm-" + config["ASSEMBLER"] + ".fasta", sample=SAMPLES),
+        TABDIR + "/virushunter.tsv", TABDIR + "/virusgatherer-" + config["ASSEMBLER"] + ".tsv"
+    )
+  
 
+rule all:
+    message:
+       "Running selected pipeline"
+    input:
+        all_inputs
 
 # virushunter search
 rule hunter:
