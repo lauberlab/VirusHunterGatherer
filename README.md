@@ -27,6 +27,22 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 
 ## Installation
 
+1. Download the current repository (Click **Code --> Download ZIP**. Extract the ZIP file and navigate into the extracted folder.)
+2. Install the requirements. To ease the process, we recommend building a [Conda](https://github.com/conda-forge/miniforge) environment using the provided `vhvg.yaml` file:
+
+```
+conda env create --name environment_name --file vhvg.yaml   # be patient, it takes some time
+conda activate environment_name
+```
+
+Alternatively, the environment can be created using this command:
+
+```
+conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch bowtie2
+conda activate environment_name
+```
+3. Before running the tool, [edit the `config.yaml` file](TODO) and check the required [Blast databases](#blast-databases).
+
 ## Blast databases
 
 You need to install the following Blast databases and specify their file paths and names in the config.yaml:
