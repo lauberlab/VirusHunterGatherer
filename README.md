@@ -13,18 +13,17 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 
 ## Software dependencies
 
+ * snakemake
+ * Perl
  * EMBOSS
  * seqkit
  * fastp
  * NCBI blast
  * NCBI SRA toolkit
  * HMMer
- * Genseed-HMM
  * CAP3
- * newbler
  * Bowtie 2
- * snakemake
- * vsearch >=2.15.2 <2.20.0
+ * vsearch
 
 ## Installation
 
