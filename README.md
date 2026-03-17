@@ -2,7 +2,16 @@
 
 This is a two-stage computational workflow for data-driven virus discovery from sequencing data from the [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra) or your own data. Stage 1 (**Virushunter**) searches the raw reads using profile Hidden Markov Models. Stage 2 (**Virusgatherer**) perform a seed-based, iterative viral genome assembly that specifically targets the sequences identified in the first stage.
 
-# Software dependencies
+# Documentation
+
+* [Software dependencies](#software-dependencies)
+* [Installation](#installation)
+* [Blast databases](#blast-databases)
+* [Support](#support)
+* [License](#license)
+* [References](#references)
+
+## Software dependencies
 
  * EMBOSS
  * seqkit
@@ -17,7 +26,9 @@ This is a two-stage computational workflow for data-driven virus discovery from 
  * snakemake
  * vsearch >=2.15.2 <2.20.0
 
-# Blast databases
+## Installation
+
+## Blast databases
 
 You need to install the following Blast databases and specify their file paths and names in the config.yaml:
  * refseq_protein (can be downloaded from https://ftp.ncbi.nlm.nih.gov/blast/db/)
@@ -30,15 +41,15 @@ NOTE: to download only RdRp-encoding RNA viruses, the following command can be u
 
   *Note:* For detailed instructions on downloading Blast databases, please refer to our [GitHub Wiki](https://github.com/lauberlab/VirusHunterGatherer/wiki). 
 
-# Support
+## Support
 
 For questions or support, email chris.lauber *at* twincore.de
 
-# License
+## License
 
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-# References
+## References
 
 Neuman BW*, Smart A*, Gilmer O*, Smyth RP*, Vaas J, Böker N, Samborskiy DV, Bartenschlager R, Seitz S, Gorbalenya AE, Caliskan N, Lauber C. Giant RNA genomes: Roles of host, translation elongation, genome architecture, and proteome in nidoviruses. Proc Natl Acad Sci U S A. 2025 Feb 18;122(7):e2413675122. [doi: 10.1073/pnas.2413675122](https://www.pnas.org/doi/10.1073/pnas.2413675122)
  
