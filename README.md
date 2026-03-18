@@ -21,40 +21,80 @@ This is a two-stage computational workflow for data-driven virus discovery from 
  * NCBI blast
  * NCBI SRA toolkit
  * HMMer
- * CAP3
- * Bowtie 2
  * vsearch
+ * CAP3
+ * Bowtie 2 (optional)
 
 ## Installation
 
 1. Download the current repository (Click **Code --> Download ZIP**. Extract the ZIP file and navigate into the extracted folder.)
 2. Install the requirements. To ease the process, we recommend building a [Conda](https://github.com/conda-forge/miniforge) environment using the provided `vhvg.yaml` file:
 
-```
+```{bash}
 conda env create --name environment_name --file vhvg.yaml   # be patient, it takes some time
 conda activate environment_name
 ```
 
 Alternatively, the environment can be created using this command:
 
-```
-conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch bowtie2
+```{bash}
+conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch #bowtie2
 conda activate environment_name
 ```
-3. Before running the tool, [edit the `config.yaml` file](TODO) and check the required [Blast databases](#blast-databases).
+3. Before running the tool, set up the required [Blast databases](#blast-databases) and [edit the `config.yaml` file](TODO).
 
 ## Blast databases
 
-You need to install the following Blast databases and specify their file paths and names in the config.yaml:
- * refseq_protein (can be downloaded from https://ftp.ncbi.nlm.nih.gov/blast/db/)
- * viral_protein (the sequences can be downloaded from https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/, only accessions are required)
- * viral_genomic (the sequences can be downloaded from https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/; use `makeblastdb` command with `parse_seqids` to create a BLAST database)
+During pipeline execution, Virushunter and Virusgatherer rely on several Blast databases to filter and annotate assembled contigs. For general use and initial test runs, we recommend setting up the following databases:
 
+ * **contaminant DB** (DBFILTER in `config.yaml`)
+
+A custom set of contaminant sequences is provided and must be indexed prior to use by running:
+
+```{bash}
+cd 4_databases/
+makeblastdb -in filter.fasta -dbtype nucl -parse_seqids
+```
+
+ * **RefSeq protein DB** (DBREFSEQ in `config.yaml`)
+
+The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/blast/db/). For downloading and updating the database, we recommend using the `update_blastdb.pl` utility provided with NCBI Blast:
+
+```{bash}
+cd 4_databases/   # or any preferred location for storing the database files
+mkdir refseq_protein; cd refseq_protein/
+update_blastdb.pl --decompress refseq_protein
+```
+
+**Important**: The full database can exceed 200 GB in size. (TODO: include a workaround or alternative setup.)
+
+ * **Viral genome DB** (DBVIRAL in `config.yaml`)
+
+The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/). It can be downloaded and set up by running:
+
+```{bash}
+cd 4_databases/   # or any preferred location for storing the database files
+mkdir viral_genomic; cd viral_genomic/
+wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.1.genomic.fna.gz
+gunzip viral.1.1.genomic.fna.gz
+makeblastdb -in filter.fasta -dbtype nucl -parse_seqids -out viral_genomic
+```
+
+ * **Viral RefSeq protein DB** (ACCSVIRAL in `config.yaml`)
+
+The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/). However, only a list of accession identifiers is required for subsequent queries against the RefSeq protein DB created above. This list can be generated using:
+
+```
+cd 4_databases/   # or any preferred location for storing the database files
+mkdir viral_protein; cd viral_protein/
+wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.protein.faa.gz
+gunzip viral.1.protein.faa.gz
+grep ">" viral.1.protein.faa | cut -d " " -f 1,1 | cut -c 2- > viral_protein.acc_list
+```
+
+<!--
 NOTE: to download only RdRp-encoding RNA viruses, the following command can be used: `esearch -db nucleotide -query "txid2559587[Organism:exp] AND refseq[filter] NOT txid2732397[Organism:exp]" | efetch -format fasta > riboviria.no_pararnavirae.genomic.fna`
-
- * filter (see subfolder 4_databases; use `makeblastdb` command to create a BLAST database)
-
-  *Note:* For detailed instructions on downloading Blast databases, please refer to our [GitHub Wiki](https://github.com/lauberlab/VirusHunterGatherer/wiki). 
+-->
 
 ## Support
 
