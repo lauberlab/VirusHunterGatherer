@@ -4,19 +4,25 @@
 #                                                   #
 #####################################################
 #
-# workflow base directory
-WFLOWDIR:  "/home/lauber/workflows/01_VirusHunterGatherer"
+# workflow directory (path to the repository)
+WFLOWDIR:  "<full_path_to_directory>/VirusHunterGatherer"
 #
-# list with SRA accessions (empty string to use user-specified data)
-ACCLIST:   "/home/lauber/workflows/01_VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
+# list of SRA accessions (use "" to skip and provide your own data below)
+ACCLIST:   "<full_path_to_directory>/VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
 #
-# directory with fastq files
-FASTQDIR:  "/data/tests/SRA_n3_test"
+# directory with your fastq files (or location for downloaded SRA files)
+FASTQDIR:  "<full_path_to_directory>/SRA_n3_test"
 #
-# group of viruses to search for (RNAviruses, smallDNAviruses, largeDNAviruses)
+# base directory where results are saved
+BASEDIR:   "<full_path_to_directory>/vhvg_results"
+#
+# virus group to search for (e.g., RNAviruses, smallDNAviruses, largeDNAviruses, ...)
+# corresponds to an HMM profile in the `2_profiles` directory; custom HMM profiles should also be placed there
 VIRFAM:    "RNAviruses"
 #
 # name of project folder
+# combined output path will be constructed as:
+# <BASEDIR>/<VIRFAM>/<PROJECTID>
 PROJECTID: "test_SRA_n3"
 #
 # number of threads to use for analysis of individual datasets
@@ -25,10 +31,14 @@ THREADS:   6
 # assembler to be used for seed-based assembly using Genseed-HMM
 ASSEMBLER: "cap3"
 #
-# flag to specify whether or not SRA data is to be analyzed
+# is SRA data to be analyzed (1 = yes, 0 = no)
 ISSRA:     1
 #
-# flag to enable mapping against human genome; only recommended when analysing human samples
+# run only VirusHunter, but not VirusGatherer (1 = yes, 0 = no)
+ONLYHUNTER: 0
+#
+# enable mapping against human genome (1 = yes, 0 = no);
+# only recommended when analysing human samples
 MAPHG38:   0
 #
 #####################################################
@@ -37,26 +47,22 @@ MAPHG38:   0
 #                                                   #
 #####################################################
 #
-# base directory where results are saved
-BASEDIR:   "/data/virushunter"
+# blast database used for filtering against contaminant sequences
+DBFILTER:  "<full_path_to_directory>/VirusHunterGatherer/4_databases/filter"
 #
-# blast database used for 1st filtering step against contaminant sequences
-DBFILTER:  "/data/db/RefSeq/filter/filter"
+# blast database used for filtering against non-viral RefSeq proteins
+DBREFSEQ:  "<full_path_to_directory>/VirusHunterGatherer/4_databases/refseq_protein"
 #
-# blast database used for 2nd filtering step against non-viral RefSeq
-DBREFSEQ:  "/data/db/RefSeq/refseq_protein/refseq_protein"
+# blast database of viral RefSeq genomes used for annotation of viral contigs
+DBVIRAL:   "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_genomic"
 #
-# blast database used for 3rd filtering step against viral RefSeq
-DBVIRAL:   "/data/db/RefSeq/viral_genomic/viral_genomic"
+# list of viral protein accessions used for annotation of viral contigs
+ACCSVIRAL: "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_protein.acc_list"
 #
-# list of viral accessions in RefSeq
-ACCSVIRAL: "/data/db/RefSeq/viral_protein/viral_protein.acc_list"
-#
-# flag to enable debugging mode
-DEBUGMODE: 0
-#
-# flag to enable or disable filter against non-viral RefSeq protein database
+# enable filtering against non-viral RefSeq proteins (1 = yes, 0 = no)
 ENABLE_FILTER_3: 0
 #
-# flag to run only VirusHunter. If set to 0, the pipeline runs both vh and vg.
-ONLYHUNTER: 1
+# enable debugging mode (1 = yes, 0 = no)
+# when enabled, intermediate files are not removed and can consume a lot of disk space
+DEBUGMODE: 0
+#
