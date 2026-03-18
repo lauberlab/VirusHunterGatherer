@@ -47,7 +47,7 @@ conda activate environment_name
 
 During pipeline execution, Virushunter and Virusgatherer rely on several Blast databases to filter and annotate assembled contigs. For general use and initial test runs, we recommend setting up the following databases:
 
- * **contaminant DB** (DBFILTER in `config.yaml`)
+### Contaminant DB (DBFILTER in `config.yaml`)
 
 A custom set of contaminant sequences is provided and must be indexed prior to use by running:
 
@@ -56,7 +56,7 @@ cd 4_databases/
 makeblastdb -in filter.fasta -dbtype nucl -parse_seqids
 ```
 
- * **RefSeq protein DB** (DBREFSEQ in `config.yaml`)
+### RefSeq protein DB (DBREFSEQ in `config.yaml`)
 
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/blast/db/). For downloading and updating the database, we recommend using the `update_blastdb.pl` utility provided with NCBI Blast:
 
@@ -76,7 +76,7 @@ gunzip viral.1.protein.faa.gz
 makeblastdb -in viral.1.protein.faa -dbtype prot -parse_seqids -out viral_refseq_protein
 ```
 
- * **Viral genome DB** (DBVIRAL in `config.yaml`)
+### Viral genome DB (DBVIRAL in `config.yaml`)
 
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/). It can be downloaded and set up by running:
 
@@ -88,7 +88,7 @@ gunzip viral.1.1.genomic.fna.gz
 makeblastdb -in filter.fasta -dbtype nucl -parse_seqids -out viral_genomic
 ```
 
- * **Viral RefSeq protein DB** (ACCSVIRAL in `config.yaml`)
+### Viral RefSeq protein DB (ACCSVIRAL in `config.yaml`)
 
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/). However, only a list of accession identifiers is required for subsequent queries against the RefSeq protein DB created above. This list can be generated using:
 
