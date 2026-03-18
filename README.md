@@ -7,6 +7,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [Software dependencies](#software-dependencies)
 * [Installation](#installation)
 * [Blast databases](#blast-databases)
+* [Configuration file](#configuration-file)
 * [Support](#support)
 * [License](#license)
 * [References](#references)
@@ -41,7 +42,7 @@ Alternatively, the environment can be created using this command:
 conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch #bowtie2
 conda activate environment_name
 ```
-3. Before running the tool, set up the required [Blast databases](#blast-databases) and [edit the `config.yaml` file](TODO).
+3. Before running the tool, set up the required [Blast databases](#blast-databases) and edit the `config.yaml` [file](#configuration-file).
 
 ## Blast databases
 
@@ -103,6 +104,10 @@ grep ">" viral.1.protein.faa | cut -d " " -f 1,1 | cut -c 2- > viral_protein.acc
 <!--
 NOTE: to download only RdRp-encoding RNA viruses, the following command can be used: `esearch -db nucleotide -query "txid2559587[Organism:exp] AND refseq[filter] NOT txid2732397[Organism:exp]" | efetch -format fasta > riboviria.no_pararnavirae.genomic.fna`
 -->
+
+## Configuration file
+
+The provided `config.yaml` serves as an example and is preconfigured for initial test runs, once the paths to the required folders and databases have been updated.
 
 ## Support
 
