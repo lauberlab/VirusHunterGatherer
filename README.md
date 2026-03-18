@@ -8,6 +8,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [Installation](#installation)
 * [Blast databases](#blast-databases)
 * [Configuration file](#configuration-file)
+* [Test run](#test-run)
 * [Support](#support)
 * [License](#license)
 * [References](#references)
@@ -93,7 +94,7 @@ makeblastdb -in filter.fasta -dbtype nucl -parse_seqids -out viral_genomic
 
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/). However, only a list of accession identifiers is required for subsequent queries against the RefSeq protein DB created above. This list can be generated using:
 
-```
+```{bash}
 cd 4_databases/   # or any preferred location for storing the database files
 mkdir viral_protein; cd viral_protein/
 wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.protein.faa.gz
@@ -108,6 +109,15 @@ NOTE: to download only RdRp-encoding RNA viruses, the following command can be u
 ## Configuration file
 
 The provided `config.yaml` serves as an example and is preconfigured for initial test runs, once the paths to the required folders and databases have been updated.
+
+## Test run
+
+After setting up the required [BLAST databases](#blast-databases) and updating the [configuration file](#configuration-file), the pipeline can be executed from the repository directory using Snakemake:
+
+```{bash}
+snakemake -n -p -j 3 --configfile config.yaml   # dry run to preview workflow steps
+snakemake -p -j 3 --configfile config.yaml   # execute the pipeline
+```
 
 ## Support
 
