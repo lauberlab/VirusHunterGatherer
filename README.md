@@ -66,7 +66,15 @@ mkdir refseq_protein; cd refseq_protein/
 update_blastdb.pl --decompress refseq_protein
 ```
 
-**Important**: The full database can exceed 200 GB in size. (TODO: include a workaround or alternative setup.)
+**Important**: The full database can exceed 100 GB in size. Even if this filtering step is disabled (by setting "ENABLE_FILTER_3: 0" in `config.yaml`), the database remains required, as Virusgatherer uses it for viral contig annotation. As an alternative, a reduced viral RefSeq protein database can be used:
+
+```
+cd 4_databases/   # or any preferred location for storing the database files
+mkdir refseq_protein; cd refseq_protein/
+wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.protein.faa.gz
+gunzip viral.1.protein.faa.gz
+makeblastdb -in viral.1.protein.faa -dbtype prot -parse_seqids -out viral_refseq_protein
+```
 
  * **Viral genome DB** (DBVIRAL in `config.yaml`)
 
