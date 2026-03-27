@@ -57,7 +57,7 @@ DBREFSEQ:  "<full_path_to_directory>/VirusHunterGatherer/4_databases/refseq_prot
 DBVIRAL:   "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_genomic"
 #
 # list of viral protein accessions used for annotation of viral contigs
-ACCSVIRAL: "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_protein.acc_list"
+ACCSVIRAL: "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_protein/viral_protein.acc_list"
 #
 # enable filtering against non-viral RefSeq proteins (1 = yes, 0 = no)
 ENABLE_FILTER_3: 0
