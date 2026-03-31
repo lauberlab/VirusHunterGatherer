@@ -45,7 +45,13 @@ conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer p
 conda activate environment_name
 ```
 
-2. Download the current repository (Click **Code --> Download ZIP**. Extract the ZIP file and navigate into the extracted folder.)
+2. Clone the current repository by running:
+
+```{bash}
+git clone https://github.com/lauberlab/VirusHunterGatherer.git
+```
+
+**Note:** Make sure Git is installed on your system. (You can run `conda install git` to have it in the same Conda environment.)
 
 3. Before running the tool, set up the required [Blast databases](#blast-databases) and edit the `config.yaml` [file](#configuration-file).
 
