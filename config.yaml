@@ -3,6 +3,9 @@
 # parameters usually adjusted by the user each time #
 #                                                   #
 #####################################################
+# 
+# NOTE: Replace <full_path_to_directory> with the path to the directory where you cloned the repository.
+# By default, this is the location of the VirusHunterGatherer folder on your system.
 #
 # workflow directory (path to the repository)
 WFLOWDIR:  "<full_path_to_directory>/VirusHunterGatherer"
@@ -10,7 +13,7 @@ WFLOWDIR:  "<full_path_to_directory>/VirusHunterGatherer"
 # list of SRA accessions (use "" to skip and provide your own data below)
 ACCLIST:   "<full_path_to_directory>/VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
 #
-# directory with your fastq files (or location for downloaded SRA files)
+# directory with your fastq files (or location for downloaded from SRA fastq files)
 FASTQDIR:  "<full_path_to_directory>/SRA_n3_test"
 #
 # base directory where results are saved
