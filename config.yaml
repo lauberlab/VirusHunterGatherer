@@ -48,13 +48,13 @@ MAPHG38:   0
 #####################################################
 #
 # blast database used for filtering against contaminant sequences
-DBFILTER:  "<full_path_to_directory>/VirusHunterGatherer/4_databases/filter"
+DBFILTER:  "<full_path_to_directory>/VirusHunterGatherer/4_databases/filter/filter"
 #
 # blast database used for filtering against non-viral RefSeq proteins
-DBREFSEQ:  "<full_path_to_directory>/VirusHunterGatherer/4_databases/refseq_protein"
+DBREFSEQ:  "<full_path_to_directory>/VirusHunterGatherer/4_databases/refseq_protein/refseq_protein"
 #
 # blast database of viral RefSeq genomes used for annotation of viral contigs
-DBVIRAL:   "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_genomic"
+DBVIRAL:   "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_genomic/viral_genomic"
 #
 # list of viral protein accessions used for annotation of viral contigs
 ACCSVIRAL: "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_protein/viral_protein.acc_list"

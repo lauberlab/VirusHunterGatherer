@@ -54,7 +54,7 @@ During pipeline execution, Virushunter and Virusgatherer rely on several Blast d
 A custom set of contaminant sequences is provided and must be indexed prior to use by running:
 
 ```{bash}
-cd 4_databases/
+cd 4_databases/filter/
 makeblastdb -in filter.fasta -dbtype nucl -parse_seqids
 ```
 
