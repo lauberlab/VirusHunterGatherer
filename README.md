@@ -34,18 +34,18 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 **Note:** Make sure Conda is installed beforehand. You can find installation instructions on [the official website](https://docs.conda.io/projects/conda/en/stable/user-guide/getting-started.html).
 
 ```{bash}
-conda env create --name environment_name --file vhvg.yaml   # be patient, it takes some time
+conda env create --name environment_name --file vhvg.yaml
 conda activate environment_name
 ```
 
 Alternatively, the environment can be created using this command:
 
 ```{bash}
-conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch #bowtie2
+conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch
 conda activate environment_name
 ```
 
-2. Clone the current repository by running:
+2. Clone the current repository:
 
 ```{bash}
 git clone https://github.com/lauberlab/VirusHunterGatherer.git
@@ -58,6 +58,8 @@ git clone https://github.com/lauberlab/VirusHunterGatherer.git
 ## Blast databases
 
 During pipeline execution, Virushunter and Virusgatherer rely on several Blast databases to filter and annotate assembled contigs. For general use and initial test runs, we recommend setting up the following databases:
+
+**Note:** In the examples provided here, the `4_databases` folder within this repository is used as the default location for storing database files. You may choose any other location based on your preference.
 
 ### Contaminant DB (DBFILTER in `config.yaml`)
 
@@ -73,7 +75,7 @@ makeblastdb -in filter.fasta -dbtype nucl -parse_seqids
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/blast/db/). For downloading and updating the database, we recommend using the `update_blastdb.pl` utility provided with NCBI Blast:
 
 ```{bash}
-cd 4_databases/   # or any preferred location for storing the database files
+cd 4_databases/
 mkdir refseq_protein; cd refseq_protein/
 update_blastdb.pl --decompress refseq_protein
 ```
@@ -81,7 +83,7 @@ update_blastdb.pl --decompress refseq_protein
 **Important**: The full database can exceed 100 GB in size. Even if this filtering step is disabled (by setting "ENABLE_FILTER_3: 0" in `config.yaml`), the database remains required, as Virusgatherer uses it for viral contig annotation. As an alternative, a reduced viral RefSeq protein database can be used:
 
 ```
-cd 4_databases/   # or any preferred location for storing the database files
+cd 4_databases/
 mkdir refseq_protein; cd refseq_protein/
 wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.protein.faa.gz
 gunzip viral.1.protein.faa.gz
@@ -93,7 +95,7 @@ makeblastdb -in viral.1.protein.faa -dbtype prot -parse_seqids -out viral_refseq
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/). It can be downloaded and set up by running:
 
 ```{bash}
-cd 4_databases/   # or any preferred location for storing the database files
+cd 4_databases/
 mkdir viral_genomic; cd viral_genomic/
 wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.1.genomic.fna.gz
 gunzip viral.1.1.genomic.fna.gz
@@ -105,7 +107,7 @@ makeblastdb -in filter.fasta -dbtype nucl -parse_seqids -out viral_genomic
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/). However, only a list of accession identifiers is required for subsequent queries against the RefSeq protein DB created above. This list can be generated using:
 
 ```{bash}
-cd 4_databases/   # or any preferred location for storing the database files
+cd 4_databases/
 mkdir viral_protein; cd viral_protein/
 wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.protein.faa.gz
 gunzip viral.1.protein.faa.gz
@@ -122,11 +124,16 @@ The provided `config.yaml` serves as an example and is preconfigured for initial
 
 ## Test run
 
-After setting up the required [BLAST databases](#blast-databases) and updating the [configuration file](#configuration-file), the pipeline can be executed from the repository directory using Snakemake:
+After setting up the required [BLAST databases](#blast-databases) and updating the [configuration file](#configuration-file), the pipeline can be executed from the repository directory using Snakemake.
 
+Dry run to preview workflow steps:
 ```{bash}
-snakemake -n -p -j 3 --configfile config.yaml   # dry run to preview workflow steps
-snakemake -p -j 3 --configfile config.yaml   # execute the pipeline
+snakemake -n -p -j 3 --configfile config.yaml
+```
+
+Execute the pipeline:
+```{bash}
+snakemake -p -j 3 --configfile config.yaml
 ```
 
 ## Support
