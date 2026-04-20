@@ -8,7 +8,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [Installation](#installation)
 * [Blast databases](#blast-databases)
 * [Configuration file](#configuration-file)
-* [Test run](#test-run)
+* [Test run and system requirements](#test-run-and-system-requirements)
 * [Support](#support)
 * [License](#license)
 * [References](#references)
@@ -122,7 +122,7 @@ NOTE: to download only RdRp-encoding RNA viruses, the following command can be u
 
 The provided `config.yaml` serves as an example and is preconfigured for initial test runs, once the paths to the required folders and databases have been updated.
 
-## Test run
+## Test run and system requirements
 
 After setting up the required [BLAST databases](#blast-databases) and updating the [configuration file](#configuration-file), the pipeline can be executed from the repository directory using Snakemake.
 
@@ -135,6 +135,19 @@ Execute the pipeline:
 ```{bash}
 snakemake -p -j 3 --configfile config.yaml
 ```
+
+### Example performance (on the test dataset)
+
+The following system was used for the test run:
+* **CPU**: AMD Ryzen 3 3300X (4 cores / 8 threads, 3.8 GHz)
+* **RAM**: 32 GB
+
+Test results:
+* **Peak memory usage**: ~1.4 GB RAM
+* **CPU time**: ~5 hours
+* **Actual waiting time**: ~1 hour 15 minutes
+
+⚠️ This gives users a rough baseline, but actual **runtime and memory usage depend heavily on input size and system configuration**.
 
 ## Support
 
