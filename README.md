@@ -46,7 +46,7 @@ conda activate environment_name
 Alternatively, the environment can be created using this command:
 
 ```{bash}
-conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch
+conda create --name environment_name -c bioconda blast cap3 emboss fastp hmmer perl seqkit snakemake sra-tools vsearch perl-parallel-forkmanager
 conda activate environment_name
 ```
 
