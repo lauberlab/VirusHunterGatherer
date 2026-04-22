@@ -11,6 +11,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [Blast databases](#blast-databases)
 * [Configuration file](#configuration-file)
 * [Test run and system requirements](#test-run-and-system-requirements)
+* [Output folders and important files](#output-folders-and-important-files)
 * [Support](#support)
 * [License](#license)
 * [References](#references)
@@ -140,7 +141,7 @@ Execute the pipeline:
 snakemake -p -j 3 --configfile config.yaml
 ```
 
-### Example performance (on the test dataset)
+#### Example performance (on the test dataset)
 
 The following system was used for the test run:
 * **CPU**: AMD Ryzen 3 3300X (4 cores / 8 threads, 3.8 GHz)
@@ -152,6 +153,46 @@ Test results:
 * **Actual waiting time**: ~1 hour 15 minutes
 
 ⚠️ This gives users a rough baseline, but actual **runtime and memory usage depend heavily on input size and system configuration**.
+
+## Output folders and important files
+
+All pipeline outputs are written to the `BASEDIR` directory (user-defined arbitrary name). Within this directory, results are organised by the selected HMM profile set and project ID:
+
+```{bash}
+BASEDIR/
+└── VIRFAM/
+    └── PROJECTID/
+        ├── hittables/
+        ├── logs/
+        └── results/
+```
+
+* `VIRFAM/` folder indicates the set of HMM profiles used for screening. For example, `RNAviruses` would correspond to a collection of RdRp-derived HMM profiles targeting different RNA virus groups.
+* `PROJECTID/` - A unique directory for each analysed dataset (user-defined arbitrary name).
+
+**Main output folders**
+
+* `hittables/` contains tab-separated (`.tsv`) summary tables of detected hits separate for Virushunter and Virusgatherer. These are the primary files for quickly inspecting and interpreting screening results.
+* `logs/` stores log files generated during pipeline execution. Useful for troubleshooting and tracking processing steps.
+* `results/` contains detailed outputs organized per input FASTQ file:
+
+```{bash}
+results/
+└── fastq_1/
+    ├── virushunter/
+    └── virusgatherer/
+        └── *.fasta
+└── fastq_2/
+    ...
+```
+
+Each subfolder corresponds to an analyzed FASTQ dataset. Within these, FASTA files containing assembled viral contigs are stored.
+
+**Key files to inspect**
+* **Hit tables** (`hittables/*.tsv`)
+* **FASTA files** (`results/*/virusgatherer/*.fasta`)
+
+These two outputs together provide both a high-level overview and sequence-level results.
 
 ## Support
 
