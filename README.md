@@ -75,6 +75,34 @@ cd 4_databases/filter/
 makeblastdb -in filter.fasta -dbtype nucl -parse_seqids
 ```
 
+One can use their own custom contamination database. For this,
+
+1. **Create a FASTA file**
+
+   Collect all contaminant sequences into a single file, for example, `my_contaminants.fasta`
+   
+2. **Place the file in a dedicated directory** (recommended)
+
+   ```{bash}
+   mkdir 4_databases/my_filter/
+   mv my_contaminants.fasta 4_databases/my_filter/
+   cd 4_databases/my_filter/
+   ```
+
+3. **Build the BLAST database**
+
+   ```{bash}
+   makeblastdb -in my_contaminants.fasta -dbtype nucl -parse_seqids
+   ```
+
+4. **Update the configuration file**
+
+   In your `config.yaml`, set the `DBFILTER` parameter to point to the newly created database (use the path **without file extension**)
+
+   ```{YAML}
+   DBFILTER: "<full_path_to_directory>/VirusHunterGatherer/4_databases/my_filter/my_contaminants"
+   ```
+
 ### RefSeq protein DB (DBREFSEQ in `config.yaml`)
 
 The database is available from the NCBI Blast FTP repository (https://ftp.ncbi.nlm.nih.gov/blast/db/). For downloading and updating the database, we recommend using the `update_blastdb.pl` utility provided with NCBI Blast:
