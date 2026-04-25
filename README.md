@@ -83,7 +83,7 @@ One can use their own custom contamination database. For this,
    
 2. **Place the file in a dedicated directory** (recommended)
 
-   ```{bash}
+   ```
    mkdir 4_databases/my_filter/
    mv my_contaminants.fasta 4_databases/my_filter/
    cd 4_databases/my_filter/
@@ -91,7 +91,7 @@ One can use their own custom contamination database. For this,
 
 3. **Build the BLAST database**
 
-   ```{bash}
+   ```
    makeblastdb -in my_contaminants.fasta -dbtype nucl -parse_seqids
    ```
 
@@ -99,7 +99,7 @@ One can use their own custom contamination database. For this,
 
    In your `config.yaml`, set the `DBFILTER` parameter to point to the newly created database (use the path **without file extension**)
 
-   ```{YAML}
+   ```yaml
    DBFILTER: "<full_path_to_directory>/VirusHunterGatherer/4_databases/my_filter/my_contaminants"
    ```
 
