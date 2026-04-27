@@ -9,6 +9,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [Software dependencies](#software-dependencies)
 * [Installation](#installation)
 * [Blast databases](#blast-databases)
+* [pHMM profiles for homology search](#phmm-profiles-for-homology-search)
 * [Configuration file](#configuration-file)
 * [Test run and system requirements](#test-run-and-system-requirements)
 * [Output folders and important files](#output-folders-and-important-files)
@@ -150,6 +151,31 @@ grep ">" viral.1.protein.faa | cut -d " " -f 1,1 | cut -c 2- > viral_protein.acc
 <!--
 NOTE: to download only RdRp-encoding RNA viruses, the following command can be used: `esearch -db nucleotide -query "txid2559587[Organism:exp] AND refseq[filter] NOT txid2732397[Organism:exp]" | efetch -format fasta > riboviria.no_pararnavirae.genomic.fna`
 -->
+
+## pHMM profiles for homology search
+
+Virushunter performs homology searches using protein Hidden Markov Model (pHMM) profiles. The package includes three predefined pHMM profile sets located in the `2_profiles` directory:
+| Virus group       | Number of pHMM profiles |
+|-------------------|-------------------------|
+|RNA viruses        | 31                      |
+| small DNA viruses | 12                      |
+| large DNA viruses | 88                      |
+
+To screen sequences against a specific virus group, set the `VIRFAM` parameter in `config.yaml` to the desired group name.
+
+**Using Custom pHMM Profiles**
+
+One can also provide your own set of pHMM profiles. For this,
+
+1. Combine all pHMM profiles for your virus group into a single file (e.g., `myFamily-profile.hmm`).
+
+   **NOTE** The addition `-profile.hmm` is required for the tool to recognise the file.
+
+2. Place this file in the `2_profiles` directory of the repository.
+3. Update the `config.yaml` file to reference your custom profile set:
+```yaml
+VIRFAM: "myFamily"
+```
 
 ## Configuration file
 
