@@ -155,11 +155,14 @@ NOTE: to download only RdRp-encoding RNA viruses, the following command can be u
 ## pHMM profiles for homology search
 
 Virushunter performs homology searches using protein Hidden Markov Model (pHMM) profiles. The package includes three predefined pHMM profile sets located in the `2_profiles` directory:
-| Virus group       | Number of pHMM profiles |
-|-------------------|-------------------------|
-|RNA viruses        | 31                      |
-| small DNA viruses | 12                      |
-| large DNA viruses | 88                      |
+
+| Virus group                            | Number of pHMM profiles |
+|----------------------------------------|-------------------------|
+| RNA viruses                            | 31                      |
+| small DNA viruses (typically ~2–10 kb) | 12                      |
+| large DNA viruses                      | 88                      |
+
+Further details on these pHMM profiles can be found in the pipeline publication ( :heavy_exclamation_mark: TODO: add citation and link).
 
 To screen sequences against a specific virus group, set the `VIRFAM` parameter in `config.yaml` to the desired group name.
 
