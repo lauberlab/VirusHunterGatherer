@@ -2,7 +2,7 @@
 
 This is a two-stage computational workflow for data-driven virus discovery from sequencing data from the [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra) or your own data. Stage 1 (**Virushunter**) searches the raw reads using profile Hidden Markov Models. Stage 2 (**Virusgatherer**) perform a seed-based, iterative viral genome assembly that specifically targets the sequences identified in the first stage.
 
-**VirusHunterGatherer** results can be inspected and visualized using the accompanying R package **Virusparies** ([available on CRAN](https://cran.r-project.org/web/packages/Virusparies)).
+**VirusHunterGatherer** results can be inspected and visualized using the accompanying R package [**Virusparies**](https://github.com/SergejRuff/Virusparies).
 
 # Documentation
 
@@ -250,6 +250,8 @@ Each subfolder corresponds to an analyzed FASTQ dataset. Within these, FASTA fil
 * **FASTA files** (`results/*/virusgatherer/*.fasta`)
 
 These two outputs together provide both a high-level overview and sequence-level results.
+
+For downstream analysis, we provide **Virusparies**, an R package designed to work with Virushunter and Virusgatherer outputs. It includes tools for filtering and processing hits, computing summary statistics, and generating tables and figures. The package is freely available on [GitHub](https://github.com/SergejRuff/Virusparies), along with a detailed tutorial and documentation.
 
 ## Support
 
