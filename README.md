@@ -59,7 +59,7 @@ git clone https://github.com/lauberlab/VirusHunterGatherer.git
 
 **Note:** Make sure Git is installed on your system. (You can run `conda install git` to have it in the same Conda environment.)
 
-3. Before running the tool, set up the required [Blast databases](#blast-databases) and edit the `config.yaml` [file](#configuration-file).
+3. Before running the tool, set up the required [Blast databases](#blast-databases), choose the [pHMM profiles](#phmm-profiles-for-homology-search) and edit the `config.yaml` [file](#configuration-file).
 
 ## Blast databases
 
