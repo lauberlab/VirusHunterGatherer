@@ -79,7 +79,8 @@ ASSEMBLER: "cap3"
 THREADS:   6
 #
 # enable mapping against human genome (1 = yes, 0 = no);
-# only recommended when analysing human samples
+# NOTE: enable it to filter out reads by mapping against the human genome (hg38)
+# recommended only when analysing human-derived samples
 MAPHG38:   0
 #
 # enable debugging mode (1 = yes, 0 = no)
