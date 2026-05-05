@@ -1,20 +1,35 @@
-#####################################################
-#                                                   #
-# parameters usually adjusted by the user each time #
-#                                                   #
-#####################################################
 # 
 # NOTE: Replace <full_path_to_directory> with the path to the directory where you cloned the repository.
 # By default, this is the location of the VirusHunterGatherer folder on your system.
 #
+#
+#####################################################
+# Workflow path
+#####################################################
+#
 # workflow directory (path to the repository)
 WFLOWDIR:  "<full_path_to_directory>/VirusHunterGatherer"
+#
+#
+#####################################################
+# Input data
+#####################################################
+#
+# is SRA data to be analyzed (1 = yes, 0 = no)
+ISSRA:     1
 #
 # list of SRA accessions (use "" to skip and provide your own data below)
 ACCLIST:   "<full_path_to_directory>/VirusHunterGatherer/3_examples/SRA_n3_acclist.txt"
 #
 # directory with your fastq files (or location for downloaded from SRA fastq files)
 FASTQDIR:  "<full_path_to_directory>/SRA_n3_test"
+#
+#
+#####################################################
+# Output configuration
+# Final output path will be:
+# <BASEDIR>/<VIRFAM>/<PROJECTID>
+#####################################################
 #
 # base directory where results are saved
 BASEDIR:   "<full_path_to_directory>/vhvg_results"
@@ -24,30 +39,11 @@ BASEDIR:   "<full_path_to_directory>/vhvg_results"
 VIRFAM:    "RNAviruses"
 #
 # name of project folder
-# combined output path will be constructed as:
-# <BASEDIR>/<VIRFAM>/<PROJECTID>
 PROJECTID: "test_SRA_n3"
 #
-# number of threads to use for analysis of individual datasets
-THREADS:   6
-#
-# assembler to be used for seed-based assembly using Genseed-HMM
-ASSEMBLER: "cap3"
-#
-# is SRA data to be analyzed (1 = yes, 0 = no)
-ISSRA:     1
-#
-# run only VirusHunter, but not VirusGatherer (1 = yes, 0 = no)
-ONLYHUNTER: 0
-#
-# enable mapping against human genome (1 = yes, 0 = no);
-# only recommended when analysing human samples
-MAPHG38:   0
 #
 #####################################################
-#                                                   #
-# parameters usually adjusted by the user only once #
-#                                                   #
+# Databases and filtering
 #####################################################
 #
 # blast database used for filtering against contaminant sequences
@@ -64,6 +60,24 @@ ACCSVIRAL: "<full_path_to_directory>/VirusHunterGatherer/4_databases/viral_prote
 #
 # enable filtering against non-viral RefSeq proteins (1 = yes, 0 = no)
 ENABLE_FILTER_3: 0
+#
+#
+#####################################################
+# Workflow execution parameters
+#####################################################
+#
+# run only VirusHunter, but not VirusGatherer (1 = yes, 0 = no)
+ONLYHUNTER: 0
+#
+# assembler to be used for seed-based assembly using Genseed-HMM
+ASSEMBLER: "cap3"
+#
+# number of threads to use for analysis of individual datasets
+THREADS:   6
+#
+# enable mapping against human genome (1 = yes, 0 = no);
+# only recommended when analysing human samples
+MAPHG38:   0
 #
 # enable debugging mode (1 = yes, 0 = no)
 # when enabled, intermediate files are not removed and can consume a lot of disk space
