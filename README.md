@@ -11,6 +11,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [Blast databases](#blast-databases)
 * [pHMM profiles for homology search](#phmm-profiles-for-homology-search)
 * [Configuration file](#configuration-file)
+   * [Human reads filtering](#human-reads-filtering)
 * [Test run and system requirements](#test-run-and-system-requirements)
 * [Output folders and important files](#output-folders-and-important-files)
 * [Support](#support)
@@ -183,6 +184,31 @@ VIRFAM: "myFamily"
 ## Configuration file
 
 The provided `config.yaml` serves as an example and is preconfigured for initial test runs, once the paths to the required folders and databases have been updated.
+
+### Human reads filtering
+
+The `MAPHG38` option enables filtering of reads against the human reference genome (hg38) to remove host contamination.
+
+**How it works**
+
+When enabled, the pipeline modifies the `DBFILTER` path by appending the suffix `_hg38`. For example:
+
+* `MAPHG38: 0` → uses:
+
+```
+<full_path_to_directory>/VirusHunterGatherer/4_databases/filter/filter
+```
+
+* `MAPHG38: 1` → uses:
+
+```
+<full_path_to_directory>/VirusHunterGatherer/4_databases/filter/filter_hg38
+```
+
+**Important requirements**
+
+* The human genome database must be specified via `DBFILTER`
+* The hg38 database must follow the naming convention: `<DBFILTER>_hg38`
 
 ## Test run and system requirements
 
