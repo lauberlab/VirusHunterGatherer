@@ -69,7 +69,10 @@ ENABLE_FILTER_3: 0
 # run only VirusHunter, but not VirusGatherer (1 = yes, 0 = no)
 ONLYHUNTER: 0
 #
-# assembler to be used for seed-based assembly using Genseed-HMM
+# assembler to be used for seed-based assembly in VirusGatherer
+# NOTE: VirusGatherer performs assembly via Genseed-HMM under the hood.
+#   Genseed-HMM supports multiple assemblers (e.g., CAP3, Newbler, Velvet, SOAPdenovo, ABySS),
+#   but only CAP3 has been tested in this workflow, so it is the recommended default.
 ASSEMBLER: "cap3"
 #
 # number of threads to use for analysis of individual datasets
