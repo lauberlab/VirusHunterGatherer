@@ -134,7 +134,7 @@ cd 4_databases/
 mkdir viral_genomic; cd viral_genomic/
 wget https://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.1.genomic.fna.gz
 gunzip viral.1.1.genomic.fna.gz
-makeblastdb -in filter.fasta -dbtype nucl -parse_seqids -out viral_genomic
+makeblastdb -in viral.1.1.genomic.fna -dbtype nucl -parse_seqids -out viral_genomic
 ```
 
 ### Viral RefSeq protein DB (ACCSVIRAL in `config.yaml`)
