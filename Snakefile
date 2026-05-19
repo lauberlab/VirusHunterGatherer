@@ -1,9 +1,6 @@
 # run on login node / compute server
 #snakemake -p -j 3
 
-# run on compute node of HPC
-#snakemake -p --cluster-sync "srun --cpus-per-task=6 --mem-per-cpu=1875 --time=7:59:00" --jobs 100
-
 # python module import
 import glob
 import getpass

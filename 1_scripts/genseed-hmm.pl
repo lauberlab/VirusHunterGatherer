@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Genseed-HMM v. 1.0.6, 2015-11-10
 # - first release version

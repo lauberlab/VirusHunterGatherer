@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
  
 #########################################################
 # search for viral sequences in NGS data

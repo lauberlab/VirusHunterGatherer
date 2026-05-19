@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 ##########################################################
 # assemble viral sequences from NGS data
