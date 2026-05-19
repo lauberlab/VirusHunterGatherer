@@ -35,7 +35,9 @@ FASTQDIR:  "<full_path_to_directory>/SRA_n3_test"
 BASEDIR:   "<full_path_to_directory>/vhvg_results"
 #
 # virus group to search for (e.g., RNAviruses, smallDNAviruses, largeDNAviruses, ...)
-# corresponds to an HMM profile in the `2_profiles` directory; custom HMM profiles should also be placed there
+# name of virus groups should match the corresponding HMM profile in the `2_profiles` directory
+# custom HMM profiles should also be placed there
+# e.g. 2_profiles/RNAviruses-profile.hmm for virus group 'RNAviruses'
 VIRFAM:    "RNAviruses"
 #
 # name of project folder
