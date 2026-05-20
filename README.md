@@ -74,7 +74,7 @@ A custom set of contaminant sequences is provided and must be indexed prior to u
 
 ```{bash}
 cd 4_databases/filter/
-makeblastdb -in filter.fasta -dbtype nucl -parse_seqids
+makeblastdb -in filter.fasta -dbtype nucl -parse_seqids -out filter
 ```
 
 One can use their own custom contamination database. For this,
