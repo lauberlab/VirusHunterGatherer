@@ -237,6 +237,40 @@ Test results:
 
 ⚠️ This gives users a rough baseline, but actual **runtime and memory usage depend heavily on input size and system configuration**.
 
+## Test run on a Slurm-based HPC
+
+To run the workflow on a Slurm-based high-performance computer cluster, you may need to install the Snakemake executor plugin:
+```{bash}
+pip install snakemake-executor-plugin-slurm
+```
+
+We provide a separate `Snakefile.slurm` file that specifies CPU, memory and runtime resource requests for each rule. The user needs to additionally specify the slurm account, which can be identified by running:
+```{bash}
+sacctmgr show associations where user=$USER
+```
+
+The user also needs to select a slurm partition. To see which partitions are available, run:
+```{bash}
+sinfo
+```
+
+Then, execute the pipeline on the HPC login node as follows (substitute <my_account> and <my_partition> with the actual account and partition names):
+```{bash}
+snakemake -p -j 3 --configfile config.yaml \
+          --snakefile Snakefile.slurm \
+          --executor slurm \
+          --default-resources slurm_account=<my_account> slurm_partition=<my_partition>
+```
+
+The SRA metadata columns in the Virushunter and Virusgatherer hit tables (see below) may be empty if the HPC compute nodes have restricted internet access, for instance due to a firewall. In this case, you may run the respective scripts a second time directly on the **login node** after successful completion of the Snakemake call and using the respective parameter values from the config.yaml file:
+
+```{bash}
+# Virushunter hit table
+1_scripts/virushunterTWC_hittable.pl <VIRFAM> <PROJECTID> <BASEDIR> <ISSRA> > virushunter.tsv
+# Virusgatherer hit table
+1_scripts/virusgathererTWC_hittable.pl <VIRFAM> <PROJECTID> <ASSEMBLER> <BASEDIR> <ISSRA> > virusgatherer.tsv
+```
+
 ## Output folders and important files
 
 All pipeline outputs are written to the `BASEDIR` directory (user-defined arbitrary name). Within this directory, results are organised by the selected HMM profile set and project ID:
