@@ -48,15 +48,43 @@ foreach my $dir ( @hitdirs ){
 	my ($taxon, $taxid, $srastu, $srasam) = ("","","","");
 	if ( $isSRA){
 		my $command = "esearch -db sra -query $sraid | efetch -format native | xtract -pattern EXPERIMENT_PACKAGE -block SAMPLE -element SCIENTIFIC_NAME -element TAXON_ID -element \@accession -block STUDY -element \@accession";
-		my $output = `$command`;
-		# Remove leading and trailing whitespace from the output
-		$output =~ s/^\s+|\s+$//g;
-		# Split the output into tab-delimited fields
-		my @fields = split(/\t/, $output);
-		$taxon = $fields[0];
-		$taxid = $fields[1];
-		$srasam = $fields[2];
-		$srastu = $fields[3];
+
+		my $output    = "";
+                my $timed_out = 0;
+		eval{
+                        local $SIG{ALRM} = sub {
+                                $timed_out = 1;
+                                die "esearch command for SRA metadata timed out\n"; # Exits the eval block immediately
+                        };
+
+                        alarm(5);
+                        $output = `$command`;
+
+                        # Remove leading and trailing whitespace from the output
+                        $output =~ s/^\s+|\s+$//g;
+                        # Split the output into tab-delimited fields
+                        my @fields = split(/\t/, $output);
+                        $taxon  = $fields[0];
+                        $taxid  = $fields[1];
+                        $srasam = $fields[2];
+                        $srastu = $fields[3];
+		
+			alarm(0);
+                };
+                alarm(0);
+
+		# Handle the timeout or other errors
+                if ( $timed_out ){
+                        warn "$@";
+                        $taxon  = "";
+                        $taxid  = "";
+                        $srasam = "";
+                        $srastu = "";
+                }elsif( $@ ){
+                        # Rethrow other errors that occurred in the eval block
+                        die $@;
+                }
+
 	}
 
 	# get date
@@ -86,7 +114,28 @@ foreach my $dir ( @hitdirs ){
 				printf "%s\t%s\t%s\t%s\t%s\t%s", $sraid, $srasam, $srastu, $taxon, $taxid, $blaststats;
 			}
 			# add taxonomy info
-			$txval = getTaxForSeqId( $accid, "protein" );
+			$txval = "";
+			my $timed_out = 0;
+                	eval{
+                        	local $SIG{ALRM} = sub {
+                        	        $timed_out = 1;
+                        	        die "efetch command for taxonomy information timed out\n"; # Exits the eval block immediately
+                        	};
+	
+	                        alarm(5);
+				$txval = getTaxForSeqId( $accid, "protein" );
+	                        alarm(0);
+            		};
+                	alarm(0);
+
+	                # Handle the timeout or other errors
+         	        if ( $timed_out ){
+         	                warn "$@";
+         	        }elsif( $@ ){
+         	                # Rethrow other errors that occurred in the eval block
+         	                die $@;
+         	        }
+						
 			printf "\t%s", $txval;
 			# finish line
 			printf "\t%s\n", $dateA;
