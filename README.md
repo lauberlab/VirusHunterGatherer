@@ -13,6 +13,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [Configuration file](#configuration-file)
    * [Human reads filtering](#human-reads-filtering)
 * [Test run and system requirements](#test-run-and-system-requirements)
+* [Test run on a Slurm-based HPC](#test-run-slurm)
 * [Output folders and important files](#output-folders-and-important-files)
 * [Support](#support)
 * [License](#license)
