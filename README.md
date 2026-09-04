@@ -19,7 +19,7 @@ This is a two-stage computational workflow for data-driven virus discovery from 
 * [License](#license)
 * [References](#references)
 
-<img src="vhvg_fig1_2.jpg" width="450">
+<img src="vhvg_fig1_3_typo_fixed.jpg" width="450">
 
 ## Software dependencies
 
